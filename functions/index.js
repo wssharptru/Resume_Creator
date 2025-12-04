@@ -2,38 +2,37 @@ const functions = require("firebase-functions");
 // const fetch = require("node-fetch"); // Native fetch is available in Node 18+
 
 exports.polishContent = functions.https.onCall(async (data, context) => {
-  // Check if user is authenticated (optional but recommended)
-  // if (!context.auth) {
-  //   throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-  // }
-
-  const prompt = data.prompt;
-  if (!prompt) {
-    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a "prompt" argument.');
-  }
-
-  // Get API key from environment config
-  // Run: firebase functions:config:set gemini.key="YOUR_API_KEY"
-  const apiKey = functions.config().gemini.key;
-  
-  console.log("Debug: API Key present?", !!apiKey); // Log if key is present (don't log the key itself)
-
-  if (!apiKey) {
-      console.error("Gemini API key not found in functions config.");
-      throw new functions.https.HttpsError('internal', 'API key not configured.');
-  }
-
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
-  const payload = {
-    contents: [{
-      parts: [{
-        text: prompt
-      }]
-    }]
-  };
-
   try {
+    // Check if user is authenticated (optional but recommended)
+    // if (!context.auth) {
+    //   throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    // }
+
+    const prompt = data.prompt;
+    if (!prompt) {
+      throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a "prompt" argument.');
+    }
+
+    // Get API key from environment config
+    const config = functions.config();
+    if (!config.gemini || !config.gemini.key) {
+        console.error("Configuration Error: gemini.key is missing.");
+        throw new functions.https.HttpsError('internal', 'Server configuration error: API key missing.');
+    }
+    
+    const apiKey = config.gemini.key;
+    console.log("Debug: API Key present.");
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    const payload = {
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }]
+    };
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -45,7 +44,7 @@ exports.polishContent = functions.https.onCall(async (data, context) => {
     if (!response.ok) {
         const errorText = await response.text();
         console.error("Gemini API Error:", response.status, errorText);
-        throw new functions.https.HttpsError('internal', `Gemini API failed: ${response.statusText}`);
+        throw new functions.https.HttpsError('internal', `Gemini API failed: ${response.statusText} - ${errorText}`);
     }
 
     const responseData = await response.json();
@@ -59,7 +58,11 @@ exports.polishContent = functions.https.onCall(async (data, context) => {
     }
 
   } catch (error) {
-    console.error("Fetch Error Details:", error);
-    throw new functions.https.HttpsError('internal', `Failed to call Gemini API: ${error.message}`);
+    console.error("Global Function Error:", error);
+    // Re-throw HttpsErrors as is
+    if (error.code && error.details) {
+        throw error;
+    }
+    throw new functions.https.HttpsError('internal', `Internal Error: ${error.message}`);
   }
 });
