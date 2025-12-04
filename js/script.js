@@ -1,6 +1,7 @@
 const resumeData = {
     selectedTemplate: 'classic' // Default
 };
+const functions = firebase.functions();
 let currentStep = 1;
 
 // --- DOM Elements ---
@@ -855,29 +856,7 @@ function openBuilder() {
 
         // --- AI Polish Feature ---
 
-        function closeApiKeyModal() {
-            document.getElementById('apiKeyModal').classList.remove('active');
-        }
-
-
-        function saveApiKey() {
-            const key = document.getElementById('geminiApiKey').value.trim();
-            if (key) {
-                localStorage.setItem('gemini_api_key', key);
-                closeApiKeyModal();
-                alert('API Key saved! You can now use the Polish feature.');
-            } else {
-                alert('Please enter a valid API key.');
-            }
-        }
-
         async function polishContent(section) {
-            const apiKey = localStorage.getItem('gemini_api_key');
-            if (!apiKey) {
-                document.getElementById('apiKeyModal').classList.add('active');
-                return;
-            }
-
             // Check if there is anything to polish
             let hasContent = false;
             if (section === 'skills') {
@@ -906,22 +885,23 @@ function openBuilder() {
             });
 
             try {
+                const polishFunction = functions.httpsCallable('polishContent');
+
                 if (section === 'skills') {
                     const targetElement = document.getElementById('skills');
                     const textToPolish = targetElement.value;
                     
                     const prompt = `Rewrite the following skills to be professional and concise. Format as a bulleted list with each skill on a separate line. Do not use markdown formatting like **bold**. Text: "${textToPolish}"`;
                     
-                    const polishedText = await callGeminiAPI(prompt, apiKey);
-                    if (polishedText) {
-                        targetElement.value = polishedText;
+                    const result = await polishFunction({ prompt: prompt });
+                    if (result.data && result.data.text) {
+                        targetElement.value = result.data.text;
                     }
                 } else if (section === 'experience') {
                     const descriptions = document.querySelectorAll('.description-input');
                     const promises = [];
                     
                     // Determine prompt style based on template
-                    // Note: resumeData.selectedTemplate might be 'classic' by default or whatever was selected
                     const isModern = resumeData.selectedTemplate === 'modern';
                     
                     descriptions.forEach(descInput => {
@@ -937,9 +917,9 @@ function openBuilder() {
                             
                             prompt += ` Text: "${text}"`;
                             
-                            // Call API for each description
-                            promises.push(callGeminiAPI(prompt, apiKey).then(polished => {
-                                if (polished) descInput.value = polished;
+                            // Call Cloud Function for each description
+                            promises.push(polishFunction({ prompt: prompt }).then(result => {
+                                if (result.data && result.data.text) descInput.value = result.data.text;
                             }));
                         }
                     });
@@ -948,12 +928,7 @@ function openBuilder() {
                 }
             } catch (error) {
                 console.error('Error polishing text:', error);
-                if (error.message.includes('403') || error.message.includes('key')) {
-                    alert('Invalid API Key or API not enabled. Please check your key.');
-                    localStorage.removeItem('gemini_api_key');
-                } else {
-                    alert('Failed to polish text. Please try again.');
-                }
+                alert('Failed to polish text. Please try again later.');
             } finally {
                 buttons.forEach(btn => {
                     btn.disabled = false;
@@ -962,38 +937,8 @@ function openBuilder() {
             }
         }
 
-        async function callGeminiAPI(prompt, apiKey) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-            
-            const payload = {
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            };
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error(`API call failed: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
-                return data.candidates[0].content.parts[0].text.trim();
-            } else {
-                throw new Error('No content generated');
-            }
-        }
-
         // --- Initialize App ---
         document.addEventListener('DOMContentLoaded', () => {
-            initFirebaseAuth();
+            // initFirebaseAuth is now handled by auth.js listener, but we can keep this if needed for other init
+            // initFirebaseAuth(); 
         });

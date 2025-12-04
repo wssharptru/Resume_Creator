@@ -406,28 +406,13 @@
         </div>
     </div>
 
-    <!-- API Key Modal -->
-    <div id="apiKeyModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header">
-                <h2>Enter Gemini API Key</h2>
-                <button class="close-btn" onclick="closeApiKeyModal()">&times;</button>
-            </div>
-            <p style="margin-bottom: 15px; color: #666;">Please enter your Google Gemini API Key to use the AI features.</p>
-            <div class="form-group">
-                <input type="password" id="geminiApiKey" placeholder="Paste your API key here">
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn btn-outline" onclick="closeApiKeyModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveApiKey()">Save Key</button>
-            </div>
-        </div>
-    </div>
+    <!-- API Key Modal Removed - Key is now managed on server -->
 
     <!-- Auth Modal Removed - Replaced by login.html -->
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/script.js"></script>
 </body>
