@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const fetch = require("node-fetch");
+// const fetch = require("node-fetch"); // Native fetch is available in Node 18+
 
 exports.polishContent = functions.https.onCall(async (data, context) => {
   // Check if user is authenticated (optional but recommended)
@@ -16,6 +16,8 @@ exports.polishContent = functions.https.onCall(async (data, context) => {
   // Run: firebase functions:config:set gemini.key="YOUR_API_KEY"
   const apiKey = functions.config().gemini.key;
   
+  console.log("Debug: API Key present?", !!apiKey); // Log if key is present (don't log the key itself)
+
   if (!apiKey) {
       console.error("Gemini API key not found in functions config.");
       throw new functions.https.HttpsError('internal', 'API key not configured.');
@@ -57,7 +59,7 @@ exports.polishContent = functions.https.onCall(async (data, context) => {
     }
 
   } catch (error) {
-    console.error("Fetch Error:", error);
-    throw new functions.https.HttpsError('internal', 'Failed to call Gemini API.');
+    console.error("Fetch Error Details:", error);
+    throw new functions.https.HttpsError('internal', `Failed to call Gemini API: ${error.message}`);
   }
 });
