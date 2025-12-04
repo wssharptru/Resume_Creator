@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sample Resume</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="page-background">
+        <div class="resume-container">
+
+            <header class="resume-header">
+                <h1>MICHAEL WILLIAMS</h1>
+                <p class="contact">
+                    San Francisco, CA 94112 | 415-123-1200 | mwilliams@address.com
+                </p>
+            </header>
+
+            <section>
+                <h2 class="section-title">PROFESSIONAL SUMMARY</h2>
+                <p class="summary">
+                    Successful sales professional with 10+ years experience in large-scale food and retail environments.
+                    Implement cost control measures to ensure operations remain within company targets. Maximize
+                    bottom-line performance through P&amp;L, merchandising, staff management, loss control and inventory
+                    management initiatives.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="section-title">SKILLS</h2>
+                
+                <div class="skills-columns">
+                    <ul>
+                        <li>Executive team leadership</li>
+                        <li>Inventory report generation</li>
+                        <li>Client/vendor relations</li>
+                        <li>Market analysis</li>
+                    </ul>
+
+                    <ul>
+                        <li>Sales Management</li>
+                        <li>Staff training</li>
+                        <li>Customer relations</li>
+                        <li>Process improvements</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">WORK HISTORY</h2>
+
+                <div class="job-block">
+                    <p class="job-dates">AUGUST 2019 - CURRENT</p>
+                    <p class="job-title">
+                        District Manager | Verizon Wireless | San Francisco, CA
+                    </p>
+                    <ul class="job-bullets">
+                        <li>Directed recruitment/training/staff development initiatives</li>
+                        <li>Successfully increased employee retention with a positive work environment.</li>
+                        <li>Maintained 100% compliance to store policies while adhering to sales staff.</li>
+                        <li>Strategically guided franchise owner relationships to achieve business development goals.</li>
+                    </ul>
+                </div>
+
+                <div class="job-block">
+                    <p class="job-dates">JULY 1994 - JULY 1997</p>
+                    <p class="job-title">
+                        General Manager | Raymond's Restaurant | San Jose, CA
+                    </p>
+                    <ul class="job-bullets">
+                        <li>Successfully managed a team of 18 direct reports.</li>
+                        <li>Directed the renovation strategy and oversaw the $110,000 area remodel.</li>
+                        <li>Developed operational alignment strategies to create strong sales.</li>
+                        <li>Structured strong franchise owner relationships to achieve high standards.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">EDUCATION</h2>
+                <p class="education-block">
+                    <span class="edu-year">2009</span><br />
+                    <em>Master of Arts: Operations Management</em><br />
+                    San Francisco State University, San Francisco, CA
+                </p>
+            </section>
+
+        </div>
+    </div>
+</body>
+</html>
+
+STYLES.CSS
+
+/* Background outside the resume */
+body {
+    margin: 0;
+    font-family: "Helvetica", Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+/* Centered resume container */
+.page-background {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.resume-container {
+    background: #ffffff;
+    width: 750px;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Header */
+.resume-header h1 {
+    text-align: center;
+    font-size: 32px;
+    color: #0a6c78;
+    letter-spacing: 1px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.resume-header .contact {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin: 8px 0 25px;
+}
+
+/* Section title */
+.section-title {
+    color: #0a6c78;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ddd;
+    letter-spacing: 0.5px;
+}
+
+/* Summary paragraph */
+.summary {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+}
+
+/* Skills list columns */
+.skills-columns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.skills-columns ul {
+    list-style-type: disc;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.skills-columns li {
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+/* Job blocks */
+.job-block {
+    margin-top: 20px;
+}
+
+.job-dates {
+    font-size: 13px;
+    color: #555;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.job-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.job-bullets {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 0;
+}
+
+.job-bullets li {
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+/* Education section */
+.education-block {
+    font-size: 14px;
+    color: #333;
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+.edu-year {
+    font-weight: 700;
+}
