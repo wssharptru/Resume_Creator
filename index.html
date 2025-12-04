@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeCreator - Create Your Perfect Resume</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">ResumeCreator</a>
+            <nav class="nav-links">
+                <a href="#templates">Templates</a>
+                <a href="#features">Features</a>
+                <a href="#faq">FAQ</a>
+                <a href="#resources">Resources</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Create a Resume That Gets You Hired</h1>
+            <p>Create a professional resume in minutes with our easy-to-use builder</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="openBuilder()">Start Building</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('examples').scrollIntoView({behavior: 'smooth'})">View Examples</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="container" style="margin-bottom: var(--spacing-xl);">
+        <div class="section-header">
+            <h2>Why Use ResumeCreator?</h2>
+            <p>Everything you need to create a resume that stands out</p>
+        </div>
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Quick & Easy</h3>
+                <p>Complete your resume in just 14 minutes with our intuitive builder</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Professional Templates</h3>
+                <p>Choose from expertly designed templates for your industry</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✓</div>
+                <h3>ATS-Friendly</h3>
+                <p>All resumes are optimized for Applicant Tracking Systems</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h3>Smart Suggestions</h3>
+                <p>Get job-specific content suggestions as you build</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📥</div>
+                <h3>Download Options</h3>
+                <p>Export as PDF, Word, or text in seconds</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👨‍💼</div>
+                <h3>Expert Review</h3>
+                <p>Get feedback from certified resume writers</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section id="templates" class="container" style="margin-bottom: var(--spacing-xl);">
+        <div class="section-header">
+            <h2>Resume Templates for Every Job</h2>
+            <p>Choose from our collection of industry-specific templates</p>
+        </div>
+        <div class="templates-grid">
+            <div class="template-card" onclick="selectTemplate('classic')">
+                <div class="template-preview">
+                    <img src="images/classic_template_preview.png" alt="Classic Template Preview" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+                </div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Classic Template</div>
+                    <span class="template-tag">Professional</span>
+                </div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('modern')">
+                <div class="template-preview">
+                    <img src="images/modern_template_preview.png" alt="Modern Template Preview" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+                </div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Modern Template</div>
+                    <span class="template-tag">Tech Friendly</span>
+                </div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('executive')">
+                <div class="template-preview">
+                    <img src="images/executive_template_preview.png" alt="Executive Template">
+                </div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Executive Template</div>
+                    <span class="template-tag">Leadership</span>
+                </div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('creative')">
+                <div class="template-preview">Creative Template Preview</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Creative Template</div>
+                    <span class="template-tag">Colorful</span>
+                </div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('minimal')">
+                <div class="template-preview">Minimal Template Preview</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Minimal Template</div>
+                    <span class="template-tag">Clean</span>
+                </div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('executive')">
+                <div class="template-preview">Executive Template Preview</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Executive Template</div>
+                    <span class="template-tag">Leadership</span>
+                </div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('graduate')">
+                <div class="template-preview">Graduate Template Preview</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Graduate Template</div>
+                    <span class="template-tag">Student</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Steps Section -->
+    <section class="container" style="margin-bottom: var(--spacing-xl);">
+        <div class="section-header">
+            <h2>Build Your Resume in 3 Simple Steps</h2>
+            <p>It's quick, intuitive, and tailored to help you achieve your career goals</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Choose Your Template</h3>
+                <p>Select the perfect template for your job search and add your contact information</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Fill Your Information</h3>
+                <p>Add your work experience, skills, education, and get smart suggestions</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Download & Apply</h3>
+                <p>Review your resume and download in PDF, Word, or other formats</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="container" style="margin-bottom: var(--spacing-xl);">
+        <div class="section-header">
+            <h2>Get Inspired with Resume Examples</h2>
+            <p>See what high-quality resumes look like for your industry</p>
+        </div>
+        <div class="templates-grid">
+            <div class="template-card">
+                <div class="template-preview">Student Resume</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Student Resume Example</div>
+                </div>
+            </div>
+            <div class="template-card">
+                <div class="template-preview">Manager Resume</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Manager Resume Example</div>
+                </div>
+            </div>
+            <div class="template-card">
+                <div class="template-preview">Tech Professional Resume</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Tech Resume Example</div>
+                </div>
+            </div>
+            <div class="template-card">
+                <div class="template-preview">Designer Resume</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Designer Resume Example</div>
+                </div>
+            </div>
+            <div class="template-card">
+                <div class="template-preview">Teacher Resume</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Teacher Resume Example</div>
+                </div>
+            </div>
+            <div class="template-card">
+                <div class="template-preview">Sales Resume</div>
+                <div style="padding: var(--spacing-md);">
+                    <div class="template-name">Sales Resume Example</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="container" style="margin-bottom: var(--spacing-xl);">
+        <div class="section-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about ResumeCreator</p>
+        </div>
+        <div class="faq">
+            <div class="faq-item active">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Can I use ResumeCreator for free?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    You can write a resume, preview it, and save it in TXT or PDF format for free. 
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What does a resume builder do?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    A resume creator is an online tool that helps you quickly create a professional resume from scratch or upload an existing one. You get access to customizable templates designed for different industries and job titles.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Are resumes made with ResumeCreator ATS-friendly?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! All resumes created with ResumeCreator are optimized for Applicant Tracking Systems (ATS). This is important because many hiring managers use ATS tools to scan incoming resumes and select qualified candidates.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Should I make a different resume for every job application?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes, tailoring your resume for each job is important. Customizing it to match specific job keywords helps you pass through ATS systems and catches the employer's eye, increasing your chances of landing an interview.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Should I include a cover letter with my resume?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Even if not required, cover letters are important and show you're serious about the position. They're your opportunity to highlight skills that didn't fit in your resume and help you stand out from other applicants.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Can I contact ResumeCreator if I need help?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! Our support team is available seven days a week during business hours. You can reach us by email, phone, or live chat. We're here to help answer any questions about your account or resume.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="hero" style="margin-bottom: 0; margin-top: var(--spacing-xl);">
+        <div class="container">
+            <h2 style="font-size: 36px; margin-bottom: var(--spacing-md);">Ready to Land Your Dream Job?</h2>
+            <p style="font-size: 18px; margin-bottom: var(--spacing-lg);">Join thousands of job seekers who've already been hired with ResumeCreator</p>
+            <button class="btn btn-primary" onclick="openBuilder()">Start Creating Your Resume</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <a href="#">Resume Creator</a>
+                    <a href="#">Cover Letter Creator</a>
+                    <a href="#">CV Creator</a>
+                    <a href="#">Templates</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <a href="#">How to Make a Resume</a>
+                    <a href="#">How to Write a Cover Letter</a>
+                    <a href="#">Interview Questions</a>
+                    <a href="#">How to Write a CV</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact Support</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <a href="#">Twitter</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">Facebook</a>
+                    <a href="#">Instagram</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ResumeCreator. All rights reserved. | <a href="#" style="color: rgba(255,255,255,0.7);">Privacy</a> | <a href="#" style="color: rgba(255,255,255,0.7);">Terms</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Builder Modal -->
+    <div id="builderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Your Resume</h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn btn-outline" onclick="saveResumeData()" style="padding: 5px 10px; font-size: 14px;">Save Data</button>
+                    <button class="btn btn-outline" onclick="document.getElementById('loadDataInput').click()" style="padding: 5px 10px; font-size: 14px;">Load Data</button>
+                    <input type="file" id="loadDataInput" accept=".json" style="display: none;" onchange="loadResumeData(event)">
+                    <button class="close-btn" onclick="closeBuilder()">&times;</button>
+                </div>
+            </div>
+            <div id="builderForm">
+                <!-- Step 1: Contact Info -->
+                <div id="step1" class="builder-step">
+                    <h3>Contact Information</h3>
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="fullName" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="email" placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="phone" placeholder="(555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="location" placeholder="City, State">
+                    </div>
+                    <button class="btn btn-primary" onclick="nextStep(2)" style="width: 100%; margin-top: var(--spacing-lg);">Next: Work Experience</button>
+                </div>
+
+                <!-- Step 2: Work Experience -->
+                <div id="step2" class="builder-step" style="display: none;">
+                    <h3>Work Experience</h3>
+                    <div id="experience-container">
+                        <!-- Entries will be added here -->
+                    </div>
+                    <button type="button" class="btn-add" onclick="addExperienceEntry()">+ Add Another Job</button>
+                    <button type="button" class="btn-ai-polish" onclick="polishContent('experience')" style="margin-left: 10px;">✨ Polish with AI</button>
+                    
+                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md);">
+                        <button class="btn btn-outline" onclick="prevStep(1)" style="flex: 1;">Back</button>
+                        <button class="btn btn-primary" onclick="nextStep(3)" style="flex: 1;">Next: Education</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Education -->
+                <div id="step3" class="builder-step" style="display: none;">
+                    <h3>Education</h3>
+                    <div id="education-container">
+                        <!-- Entries will be added here -->
+                    </div>
+                    <button type="button" class="btn-add" onclick="addEducationEntry()">+ Add Another School</button>
+
+                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md);">
+                        <button class="btn btn-outline" onclick="prevStep(2)" style="flex: 1;">Back</button>
+                        <button class="btn btn-primary" onclick="nextStep(4)" style="flex: 1;">Next: Skills</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Skills -->
+                <div id="step4" class="builder-step" style="display: none;">
+                    <h3>Skills</h3>
+                    <div class="form-group">
+                        <label>Add Your Skills (comma separated)</label>
+                        <textarea id="skills" placeholder="JavaScript, React, Python, Leadership, Communication..."></textarea>
+                        <button type="button" class="btn-ai-polish" onclick="polishContent('skills')" style="margin-top: 10px;">✨ Polish with AI</button>
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-md);">
+                        <button class="btn btn-outline" onclick="prevStep(3)" style="flex: 1;">Back</button>
+                        <button class="btn btn-primary" onclick="completeResume()" style="flex: 1;">Complete & Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Enter Gemini API Key</h2>
+                <button class="close-btn" onclick="closeApiKeyModal()">&times;</button>
+            </div>
+            <p style="margin-bottom: 15px; color: #666;">Please enter your Google Gemini API Key to use the AI features.</p>
+            <div class="form-group">
+                <input type="password" id="geminiApiKey" placeholder="Paste your API key here">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn btn-outline" onclick="closeApiKeyModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveApiKey()">Save Key</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal Removed -->
+
+    <script src="js/script.js"></script>
+</body>
+</html>
