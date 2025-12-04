@@ -1,19 +1,3 @@
-// --- PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE ---
-const firebaseConfig = {
-  apiKey: "AIzaSyBvxW_wYvfhSFF0XAJHm_ZXeL4zGD1DWMQ",
-  authDomain: "resume-creator-90b6d.firebaseapp.com",
-  projectId: "resume-creator-90b6d",
-  storageBucket: "resume-creator-90b6d.firebasestorage.app",
-  messagingSenderId: "564993156564",
-  appId: "1:564993156564:web:c74295831e111423186241",
-  measurementId: "G-SYELY4FJX8"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const analytics = getAnalytics(app);
-
 const resumeData = {
     selectedTemplate: 'classic' // Default
 };
@@ -27,59 +11,8 @@ const authModal = document.getElementById('authModal');
 const builderModal = document.getElementById('builderModal');
 
 // --- Firebase Auth Functions ---
-
-function initFirebaseAuth() {
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            // User is signed in
-            userEmailDisplay.textContent = user.email;
-            userInfo.style.display = 'flex';
-            signInLink.style.display = 'none';
-        } else {
-            // User is signed out
-            userInfo.style.display = 'none';
-            signInLink.style.display = 'block';
-        }
-    });
-}
-
-function handleSignUp() {
-    const email = document.getElementById('signUpEmail').value;
-    const password = document.getElementById('signUpPassword').value;
-    if (!email || !password) {
-        alert("Please enter both email and password.");
-        return;
-    }
-    auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-            closeAuthModal();
-        })
-        .catch(error => {
-            alert(`Error signing up: ${error.message}`);
-        });
-}
-
-function handleSignIn() {
-    const email = document.getElementById('signInEmail').value;
-    const password = document.getElementById('signInPassword').value;
-    if (!email || !password) {
-        alert("Please enter both email and password.");
-        return;
-    }
-    auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-            closeAuthModal();
-        })
-        .catch(error => {
-            alert(`Error signing in: ${error.message}`);
-        });
-}
-
-function handleSignOut() {
-    auth.signOut().catch(error => {
-        console.error("Sign out error:", error);
-    });
-}
+// Note: Core auth logic (init, sign in/up/out) is now handled in auth.js
+// UI updates are handled by the global auth state listener in auth.js
 
 function openBuilder() {
     if (auth.currentUser) {
@@ -96,8 +29,8 @@ function openBuilder() {
         
         showStep(1);
     } else {
-        alert("Please sign in to start building your resume.");
-        openAuthModal();
+        // Should not happen if redirect works, but as a fallback:
+        window.location.href = 'login.html';
     }
 }
 

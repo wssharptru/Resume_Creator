@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - ResumeCreator</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            background-color: var(--color-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .auth-container {
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .auth-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 30px;
+            display: block;
+            text-decoration: none;
+        }
+        .auth-title {
+            margin-bottom: 20px;
+            color: var(--color-text);
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            border-color: var(--color-primary);
+            outline: none;
+        }
+        .auth-toggle-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--color-text-light);
+        }
+        .auth-toggle-text a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .auth-toggle-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <a href="#" class="auth-logo">ResumeCreator</a>
+        
+        <!-- Sign In Form -->
+        <div id="signInForm">
+            <h2 class="auth-title">Welcome Back</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signInEmail" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signInPassword" placeholder="Your password">
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="submitSignIn()">Sign In</button>
+            <p class="auth-toggle-text">Don't have an account? <a href="#" onclick="toggleAuthForm('signUp')">Sign Up</a></p>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signUpForm" style="display: none;">
+            <h2 class="auth-title">Create Account</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signUpEmail" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password (min. 6 characters)</label>
+                <input type="password" id="signUpPassword" placeholder="Create a password">
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="submitSignUp()">Sign Up</button>
+            <p class="auth-toggle-text">Already have an account? <a href="#" onclick="toggleAuthForm('signIn')">Sign In</a></p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <!-- Shared Auth Logic -->
+    <script src="js/auth.js"></script>
+
+    <script>
+        function toggleAuthForm(form) {
+            const signIn = document.getElementById('signInForm');
+            const signUp = document.getElementById('signUpForm');
+            
+            if (form === 'signUp') {
+                signIn.style.display = 'none';
+                signUp.style.display = 'block';
+            } else {
+                signIn.style.display = 'block';
+                signUp.style.display = 'none';
+            }
+        }
+
+        function submitSignIn() {
+            const email = document.getElementById('signInEmail').value;
+            const password = document.getElementById('signInPassword').value;
+            handleSignIn(email, password);
+        }
+
+        function submitSignUp() {
+            const email = document.getElementById('signUpEmail').value;
+            const password = document.getElementById('signUpPassword').value;
+            handleSignUp(email, password);
+        }
+    </script>
+</body>
+</html>
