@@ -311,7 +311,7 @@ function openBuilder() {
                         }
                         .resume-modern, .resume-classic, .resume-executive {
                             background: white;
-                            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+                            /* box-shadow: 0 0 20px rgba(0,0,0,0.5); Removed per user request */
                             margin: 0 auto;
                             max-width: 800px; /* A4 width approx */
                             width: 100%;
@@ -325,7 +325,7 @@ function openBuilder() {
                                 display: block;
                             }
                             .resume-modern, .resume-classic, .resume-executive {
-                                box-shadow: none;
+                                box-shadow: none !important;
                                 max-width: 100%;
                                 width: 100%;
                                 margin: 0;
@@ -357,7 +357,11 @@ function openBuilder() {
                 <body>
                     <div class="action-bar no-print">
                         <button onclick="window.print()" class="btn btn-primary">Save as PDF / Print</button>
+                        <button onclick="window.opener.generateDocxFromHTML(${JSON.stringify(data).replace(/"/g, '&quot;')}, document)" class="btn btn-primary" style="background-color: #2b579a;">Download DOCX</button>
                         <button onclick="window.close()" class="btn btn-outline">Close</button>
+                    </div>
+                    <div id="download-notification" class="no-print" style="display: none; position: fixed; top: 80px; right: 20px; background: #fff3cd; color: #856404; padding: 15px; border: 1px solid #ffeeba; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        Downloading...
                     </div>
                     
                     ${resumeContent}
@@ -398,7 +402,170 @@ function openBuilder() {
             // Blob URLs block local resource loading in many browsers
             printWindow.document.write(html);
             printWindow.document.close();
+            
+            // Expose generateDocxFromHTML to the new window
+            printWindow.generateDocxFromHTML = generateDocxFromHTML;
         }
+
+        function getResumeCSS() {
+            return `
+            :root {
+                --color-primary: #0066cc;
+                --color-primary-hover: #0052a3;
+                --color-secondary: #f0f4f8;
+                --color-text: #1a1a1a;
+                --color-text-light: #666;
+                --color-border: #e0e0e0;
+                --color-success: #10b981;
+                --color-warning: #f59e0b;
+                --spacing-sm: 8px;
+                --spacing-md: 16px;
+                --spacing-lg: 24px;
+                --spacing-xl: 32px;
+                --radius: 8px;
+                
+                /* Modern Template Colors */
+                --modern-header-bg: #5D7B89;
+                --modern-right-bg: #F2F2F2;
+                --modern-text: #333333;
+                
+                /* Classic Template Colors */
+                --classic-text: #000000;
+                --classic-header: #333333;
+            }
+
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--color-text); background-color: #f9f9f9; line-height: 1.6; }
+
+            /* Resume Preview Styles */
+            .resume-preview { background: white; width: 100%; max-width: 800px; margin: 0 auto; text-transform: uppercase; letter-spacing: 1px; }
+
+            /* Modern Template Styles */
+            .resume-modern { display: flex; flex-direction: column; min-height: 1000px; font-family: Helvetica, Arial, sans-serif; color: var(--modern-text); }
+            .resume-modern .resume-header { background-color: var(--modern-header-bg); color: white; padding: 30px; height: 150px; position: relative; display: flex; justify-content: center; align-items: center; text-align: center; }
+            .resume-modern .header-content { width: 100%; }
+            .resume-modern h1 { font-size: 32px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+            .resume-modern .job-title { font-size: 16px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+            .resume-modern .resume-body { display: flex; flex: 1; }
+            .resume-modern .resume-left { width: 38%; padding: 48px; background: white; }
+            .resume-modern .resume-right { width: 62%; padding: 38px; background-color: var(--modern-right-bg); }
+            .resume-modern .resume-section-title { font-size: 14px; font-weight: bold; color: #808080; border-bottom: 3px solid #808080; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+            .resume-modern .resume-right .resume-section-title { border-bottom: 1px solid #ccc; }
+
+            /* Classic Template Styles */
+            .resume-classic { font-family: "Calibri", "Helvetica", Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 40px 0; color: #333; }
+            .resume-classic .resume-container { background: #ffffff; width: 750px; padding: 40px; border-radius: 12px; box-sizing: border-box; }
+            .resume-classic .resume-header h1 { text-align: center; font-size: 32px; color: #0a6c78; letter-spacing: 1px; margin: 0; font-weight: 700; }
+            .resume-classic .resume-header .contact { text-align: center; font-size: 14px; color: #666; margin: 8px 0 25px; }
+            .resume-classic .section-title { color: #0a6c78; font-size: 18px; font-weight: 700; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #ddd; letter-spacing: 0.5px; text-transform: uppercase; }
+            .resume-classic .summary { font-size: 14px; color: #333; line-height: 1.5; margin: 0 0 20px 0; }
+            .resume-classic .skills-columns { display: flex; justify-content: space-between; margin-top: 10px; margin-bottom: 20px; }
+            .resume-classic .skills-columns ul { list-style-type: disc; margin: 0; padding-left: 20px; width: 48%; }
+            .resume-classic .skills-columns li { margin-bottom: 6px; font-size: 14px; }
+            .resume-classic .job-block { margin-top: 20px; margin-bottom: 20px; }
+            .resume-classic .job-dates { font-size: 13px; color: #555; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: normal; }
+            .resume-classic .job-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: #333; }
+            .resume-classic .job-bullets { list-style-type: disc; padding-left: 20px; margin: 0; }
+            .resume-classic .job-bullets li { margin-bottom: 6px; font-size: 14px; }
+            .resume-classic .education-block { font-size: 14px; color: #333; margin-top: 10px; line-height: 1.4; margin-bottom: 20px; }
+            .resume-classic .edu-year { font-weight: 700; }
+
+            /* Shared Styles */
+            .resume-section { margin-bottom: 25px; }
+            .resume-item { margin-bottom: 15px; }
+            .resume-item-title { font-weight: bold; font-size: 14px; }
+            .resume-item-subtitle { font-size: 14px; margin-bottom: 5px; }
+            .resume-date { font-size: 12px; color: #666; margin-bottom: 5px; }
+            .resume-text { font-size: 13px; line-height: 1.5; }
+            .resume-list { list-style: none; padding: 0; }
+            .resume-list li { position: relative; padding-left: 15px; margin-bottom: 5px; font-size: 13px; }
+            .resume-list li::before { content: "•"; position: absolute; left: 0; color: var(--modern-text); }
+            `;
+        }
+
+        function generateDocxFromHTML(data, targetDoc) {
+            // Show notification
+            const docToUse = targetDoc || document;
+            const notification = docToUse.getElementById('download-notification');
+            if (notification) {
+                notification.style.display = 'flex';
+                notification.textContent = 'Generating and downloading your resume...';
+            }
+
+            // Get the resume HTML content
+            let resumeContent;
+            if (data.selectedTemplate === 'classic') {
+                resumeContent = getClassicTemplateHTML(data, true);
+            } else if (data.selectedTemplate === 'executive') {
+                resumeContent = getExecutiveTemplateHTML(data);
+            } else {
+                resumeContent = getModernTemplateHTML(data);
+            }
+
+            try {
+                // Get CSS
+                const css = getResumeCSS();
+
+                // Construct full HTML with styles
+                const fullHTML = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <style>
+                            ${css}
+                            /* Additional print/docx specific overrides if needed */
+                            body { background: white; font-family: "Calibri", sans-serif; }
+                            .resume-classic, .resume-modern, .resume-executive { margin: 0; box-shadow: none; }
+                        </style>
+                    </head>
+                    <body>
+                        ${resumeContent}
+                    </body>
+                    </html>
+                `;
+
+                // Convert to DOCX
+                // Note: html-docx-js might be loaded as 'htmlDocx' global
+                const converted = htmlDocx.asBlob(fullHTML, {
+                    orientation: 'portrait',
+                    margins: { top: 720, right: 720, bottom: 720, left: 720 } // Twips (1440 twips = 1 inch)
+                });
+
+                // Download
+                const url = window.URL.createObjectURL(converted);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${data.contact.fullName.replace(/\s+/g, '_')}_Resume.docx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Update notification
+                if (notification) {
+                    notification.textContent = 'Download started! You can close this window now.';
+                    notification.style.backgroundColor = '#d4edda';
+                    notification.style.color = '#155724';
+                    notification.style.borderColor = '#c3e6cb';
+                }
+            } catch (err) {
+                console.error('Error generating DOCX:', err);
+                if (notification) {
+                    notification.textContent = 'Error generating DOCX. Please try again.';
+                    notification.style.backgroundColor = '#f8d7da';
+                    notification.style.color = '#721c24';
+                    notification.style.borderColor = '#f5c6cb';
+                }
+            }
+        }
+
+        function getExecutiveTemplateHTML(data) {
+            // ... (rest of function)
+            return `...`; // Placeholder to keep file size manageable if not modifying this
+        }
+        // ... (rest of file)
+
 
         function getExecutiveTemplateHTML(data) {
             // Helper: Format date to "YYYY-YYYY" or "YYYY-Present"
@@ -637,7 +804,7 @@ function openBuilder() {
             `;
         }
 
-        function getClassicTemplateHTML(data) {
+        function getClassicTemplateHTML(data, forDocx = false) {
             // Format dates
             const formatDate = (dateStr) => {
                 if (!dateStr) return '';
@@ -653,8 +820,9 @@ function openBuilder() {
 
             const skills = processSkills(data.skills);
             const midPoint = Math.ceil(skills.length / 2);
-            const col1 = skills.slice(0, midPoint).map(s => `<li>${s}</li>`).join('');
-            const col2 = skills.slice(midPoint).map(s => `<li>${s}</li>`).join('');
+            const liStyle = forDocx ? 'margin-bottom: 6px;' : '';
+            const col1 = skills.slice(0, midPoint).map(s => `<li style="${liStyle}">${s}</li>`).join('');
+            const col2 = skills.slice(midPoint).map(s => `<li style="${liStyle}">${s}</li>`).join('');
 
             // Format description
             const formatDescription = (desc) => {
@@ -665,18 +833,39 @@ function openBuilder() {
                 return `<ul class="job-bullets"><li>${desc}</li></ul>`;
             };
 
+            // DOCX-specific styles (inline is safer for html-docx-js)
+            const headerStyle = forDocx ? 'text-align: center; color: #0A6C78; font-size: 20pt; font-family: Calibri, sans-serif;' : '';
+            const contactStyle = forDocx ? 'text-align: center;' : '';
+            const sectionTitleStyle = forDocx ? 'color: #0A6C78; border-bottom: 1px solid #ddd; text-transform: uppercase; font-weight: bold; font-size: 14pt; margin-top: 15px; font-family: Calibri, sans-serif;' : '';
+            const tableStyle = forDocx ? 'width: 100%; border-collapse: collapse; margin-top: 10px;' : '';
+            const tdStyle = forDocx ? 'width: 50%; vertical-align: top;' : '';
+
+            const skillsContent = forDocx ? `
+                <table style="${tableStyle}" width="100%">
+                    <tr>
+                        <td style="${tdStyle}"><ul>${col1}</ul></td>
+                        <td style="${tdStyle}"><ul>${col2}</ul></td>
+                    </tr>
+                </table>
+            ` : `
+                <div class="skills-columns">
+                    <ul>${col1}</ul>
+                    <ul>${col2}</ul>
+                </div>
+            `;
+
             return `
                 <div class="resume-classic">
                     <div class="resume-container">
                         <header class="resume-header">
-                            <h1>${data.contact.fullName.toUpperCase()}</h1>
-                            <p class="contact">
+                            <h1 style="${headerStyle}">${data.contact.fullName.toUpperCase()}</h1>
+                            <p class="contact" style="${contactStyle}">
                                 ${data.contact.location ? `${data.contact.location} | ` : ''}${data.contact.phone} | ${data.contact.email}
                             </p>
                         </header>
 
                         <section>
-                            <h2 class="section-title">PROFESSIONAL SUMMARY</h2>
+                            <h2 class="section-title" style="${sectionTitleStyle}">PROFESSIONAL SUMMARY</h2>
                             <p class="summary">
                                 Motivated professional with experience in the industry. Dedicated to achieving results and contributing to team success.
                                 Implement cost control measures to ensure operations remain within company targets. Maximize bottom-line performance.
@@ -684,15 +873,12 @@ function openBuilder() {
                         </section>
 
                         <section>
-                            <h2 class="section-title">SKILLS</h2>
-                            <div class="skills-columns">
-                                <ul>${col1}</ul>
-                                <ul>${col2}</ul>
-                            </div>
+                            <h2 class="section-title" style="${sectionTitleStyle}">SKILLS</h2>
+                            ${skillsContent}
                         </section>
 
                         <section>
-                            <h2 class="section-title">WORK HISTORY</h2>
+                            <h2 class="section-title" style="${sectionTitleStyle}">WORK HISTORY</h2>
                             ${data.experience ? data.experience.map(exp => `
                             <div class="job-block">
                                 <p class="job-dates">${formatDate(exp.startDate).toUpperCase()} - ${exp.endDate ? formatDate(exp.endDate).toUpperCase() : 'CURRENT'}</p>
@@ -705,7 +891,7 @@ function openBuilder() {
                         </section>
 
                         <section>
-                            <h2 class="section-title">EDUCATION</h2>
+                            <h2 class="section-title" style="${sectionTitleStyle}">EDUCATION</h2>
                             ${data.education ? data.education.map(edu => `
                             <p class="education-block">
                                 <span class="edu-year">${new Date(edu.graduationDate).getFullYear()}</span><br />
