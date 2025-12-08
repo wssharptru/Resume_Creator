@@ -1,6 +1,7 @@
 const resumeData = {
     selectedTemplate: 'classic' // Default
 };
+window.resumeData = resumeData;
 const functions = firebase.functions();
 let currentStep = 1;
 
@@ -15,54 +16,132 @@ const builderModal = document.getElementById('builderModal');
 // Note: Core auth logic (init, sign in/up/out) is now handled in auth.js
 // UI updates are handled by the global auth state listener in auth.js
 
-function openBuilder() {
-    if (auth.currentUser) {
-        builderModal.classList.add('active');
-        currentStep = 1;
-        
-        // Initialize with one empty entry if empty
-        if (!document.querySelector('#experience-container .entry-group')) {
-            addExperienceEntry();
+
+        function toggleFaq(element) {
+            const faqItem = element.closest('.faq-item');
+            faqItem.classList.toggle('active');
         }
-        if (!document.querySelector('#education-container .entry-group')) {
-            addEducationEntry();
+
+        
+        // --- Auth UI Functions ---
+        function openSignInModal(e) {
+            if(e) e.preventDefault();
+            const modal = document.getElementById('authModal');
+            if(modal) modal.classList.add('active');
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('authModal');
+            if(modal) modal.classList.remove('active');
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            if (window.handleSignIn) {
+                window.handleSignIn(email, password);
+            }
+            closeAuthModal();
+        }
+
+        function toggleAuthMode(e) {
+            e.preventDefault();
+            // Simple placeholder - ideally would toggle form state
+            alert("To create an account, please use the main Login page.");
         }
         
-        showStep(1);
-    } else {
-        // Should not happen if redirect works, but as a fallback:
-        window.location.href = 'login.html';
-    }
-}
+        function openBuilder() {
+
+            if (auth.currentUser) {
+                builderModal.classList.add('active');
+                currentStep = 1;
+                
+                // Initialize with one empty entry if empty
+                if (!document.querySelector('#experience-container .entry-group')) {
+                    addExperienceEntry();
+                }
+                if (!document.querySelector('#education-container .entry-group')) {
+                    addEducationEntry();
+                }
+                
+                showStep(1);
+            } else {
+                // Should not happen if redirect works, but as a fallback:
+                window.location.href = 'login.html';
+            }
+        }
 
         function closeBuilder() {
             document.getElementById('builderModal').classList.remove('active');
         }
 
-        function nextStep(step) {
+        function nextStepHandler() {
             if (validateStep(currentStep)) {
                 saveStepData(currentStep);
-                currentStep = step;
-                showStep(step);
+                if (currentStep < 4) {
+                    nextStep(currentStep + 1);
+                } else {
+                    completeResume();
+                }
             } else {
                 alert('Please fill in all required fields');
             }
         }
 
-        function prevStep(step) {
-            saveStepData(currentStep);
+        function nextStep(step) {
             currentStep = step;
             showStep(step);
+            updateStepIndicator();
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                saveStepData(currentStep);
+                currentStep--;
+                showStep(currentStep);
+                updateStepIndicator();
+            }
         }
 
         function showStep(step) {
+            // Hide all steps first
             for (let i = 1; i <= 4; i++) {
                 const stepEl = document.getElementById(`step${i}`);
                 if (stepEl) {
-                    stepEl.style.display = i === step ? 'block' : 'none';
+                    stepEl.classList.remove('active');
+                    // Ensure we're using class-based visibility or style-based?
+                    // New CSS uses .builder-steps.active { display: block } and .builder-steps { display: none }
+                    // So we just toggle class 'active'
                 }
             }
+            // Show current
+            const currentEl = document.getElementById(`step${step}`);
+            if (currentEl) currentEl.classList.add('active');
+
+            // Update Buttons Visibility
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const completeBtn = document.getElementById('completeBtn');
+
+            if (prevBtn) prevBtn.style.display = step > 1 ? 'block' : 'none';
+            if (nextBtn) nextBtn.style.display = step < 4 ? 'block' : 'none';
+            if (completeBtn) completeBtn.style.display = step === 4 ? 'block' : 'none';
+            
+            updateStepIndicator();
         }
+
+        function updateStepIndicator() {
+            document.querySelectorAll('.step-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i + 1 === currentStep) {
+                    dot.classList.add('active');
+                } else if (i + 1 < currentStep) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
 
         function validateStep(step) {
             if (step === 1) {
@@ -105,10 +184,8 @@ function openBuilder() {
                     fullName: document.getElementById('fullName').value,
                     email: document.getElementById('email').value,
                     phone: document.getElementById('phone').value,
-
                     location: document.getElementById('location').value
                 };
-                resumeData.experienceLevel = document.getElementById('experienceLevel').value;
             } else if (step === 2) {
                 resumeData.experience = [];
                 const groups = document.querySelectorAll('#experience-container .entry-group');
@@ -359,7 +436,7 @@ function openBuilder() {
                 <body>
                     <div class="action-bar no-print">
                         <button onclick="window.print()" class="btn btn-primary">Save as PDF / Print</button>
-                        <button onclick="window.opener.generateDocxFromHTML(${JSON.stringify(data).replace(/"/g, '&quot;')}, document)" class="btn btn-primary" style="background-color: #2b579a; color: white;">Download DOCX</button>
+                        <button onclick="handleDocxDownload()" class="btn btn-primary" style="background-color: #2b579a;">Download DOCX</button>
                         <button onclick="window.close()" class="btn btn-outline">Close</button>
                     </div>
                     <div id="download-notification" class="no-print" style="display: none; position: fixed; top: 80px; right: 20px; background: #fff3cd; color: #856404; padding: 15px; border: 1px solid #ffeeba; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
@@ -376,25 +453,45 @@ function openBuilder() {
                             if (resume) {
                                 const height = resume.scrollHeight;
                                 const pageHeight = 1056; // US Letter height in px at 96 DPI (11 inches)
-                                const threshold = 50; // Buffer
                                 
                                 // Check if over 1 page but less than ~1.4 pages (allow it to shrink)
                                 console.log('Resume Height:', height, 'Page Height:', pageHeight);
                                 if (height > pageHeight + 50 && height < pageHeight + 400) {
                                     resume.classList.add('compact-mode');
-                                    console.log('Applied compact mode (1 page fit attempt). Height:', height);
                                 } 
                                 // Check if slightly over 2 pages
                                 else if (height > (pageHeight * 2) + 50 && height < (pageHeight * 2) + 400) {
                                     resume.classList.add('compact-mode');
-                                    console.log('Applied compact mode (2 page fit attempt). Height:', height);
                                 }
                             }
-
-                            setTimeout(() => {
-                                // window.print(); 
-                            }, 500);
                         };
+
+                        function handleDocxDownload() {
+                            try {
+                                if (!window.opener) {
+                                    alert('Error: Cannot access parent window. Please refresh the main page and try again.');
+                                    return;
+                                }
+                                
+                                const data = window.opener.resumeData;
+                                if (!data) {
+                                    alert('Error: Resume data not found.');
+                                    return;
+                                }
+
+                                if (typeof window.opener.generateDocxFromHTML !== 'function') {
+                                    alert('Error: Generator function not found. Please wait for the page to fully load.');
+                                    return;
+                                }
+
+                                // Trigger generation in parent context, passing this document for notifications
+                                window.opener.generateDocxFromHTML(data, document);
+                                
+                            } catch (e) {
+                                alert('Error initiating download: ' + e.message);
+                                console.error(e);
+                            }
+                        }
                     <\/script>
                 </body>
                 </html>
@@ -485,82 +582,115 @@ function openBuilder() {
             `;
         }
 
+
         function generateDocxFromHTML(data, targetDoc) {
-            // Show notification
-            const docToUse = targetDoc || document;
-            const notification = docToUse.getElementById('download-notification');
-            if (notification) {
-                notification.style.display = 'flex';
-                notification.textContent = 'Generating and downloading your resume...';
+            // Check library
+            if (typeof htmlDocx === 'undefined') {
+                const msg = 'Error: html-docx-js library not loaded. Please ensure internet connection.';
+                if (targetDoc) alert(msg);
+                else console.error(msg);
+                return;
             }
 
-            // Get the resume HTML content
+            // Get the template HTML
             let resumeContent;
             if (data.selectedTemplate === 'classic') {
-                resumeContent = getClassicTemplateHTML(data, true);
+                resumeContent = getClassicTemplateHTML(data);
+                // Classic Transform: Skills columns
+                resumeContent = resumeContent.replace(
+                    /<div class="skills-columns">([\s\S]*?)<\/div>/g, 
+                    '<table width="100%" style="width: 100%; margin-bottom: 20px;"><tr><td width="50%" valign="top">$1</td></tr></table>'
+                ).replace(/<\/ul>\s*<ul>/g, '</td><td width="50%" valign="top"><ul>'); // Crude but effective for 2 lists
+                
+                // Classic Transform: Main Container
+                resumeContent = resumeContent.replace(
+                    /<div class="resume-classic">[\s\S]*?<div class="resume-container">/g,
+                    '<div class="resume-classic" style="background:#f5f5f5; padding: 20px;"><table align="center" width="750" style="width:750px; background:white; border-radius:12px;"><tr><td style="padding:40px;">'
+                ).replace(/<\/div>\s*<\/div>\s*$/g, '</td></tr></table></div>');
+
             } else if (data.selectedTemplate === 'executive') {
-                resumeContent = getExecutiveTemplateHTML(data, true);
+                resumeContent = getExecutiveTemplateHTML(data);
+                // Executive is mostly stacked, but if it has columns (like skills), handle here
+                // For now, assuming stacked is fine
+
             } else {
-                resumeContent = getModernTemplateHTML(data, true);
+                // Modern Template Transform: Flex Row -> Table
+                resumeContent = getModernTemplateHTML(data);
+                
+                // 1. Remove the outer flex wrapper
+                resumeContent = resumeContent.replace('<div class="resume-modern">', '');
+                resumeContent = resumeContent.replace('<div class="resume-body">', '<table width="100%" style="width: 100%; border-collapse: collapse;"><tr>');
+                
+                // 2. Convert Left Column
+                resumeContent = resumeContent.replace(
+                    /<div class="resume-left">/g, 
+                    '<td width="38%" valign="top" style="width: 38%; padding: 48px; background-color: #ffffff;">'
+                );
+                
+                // 3. Convert Right Column
+                resumeContent = resumeContent.replace(
+                    /<\/div>\s*<div class="resume-right">/g, 
+                    '</td><td width="62%" valign="top" style="width: 62%; padding: 38px; background-color: #F2F2F2;">'
+                );
+                
+                // 4. Close
+                resumeContent = resumeContent.replace(/<\/div>\s*<\/div>\s*<\/div>\s*$/g, '</td></tr></table>');
+                
+                // Wrap content back in specific docx wrapper
+                resumeContent = `<div class="resume-modern-docx" style="font-family: Helvetica, Arial, sans-serif;">${resumeContent}</div>`;
             }
+            
+            // Get CSS - Optimized for DOCX/Word
+            // We strip flexbox from specific classes and rely on the inline styles we added above
+            let css = getResumeCSS();
+            css += `
+                table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                td { vertical-align: top; }
+                ul { margin: 0; padding-left: 20px; }
+                li { margin-bottom: 5px; }
+            `;
 
-            try {
-                // Get CSS
-                const css = getResumeCSS();
-
-                // Construct full HTML with styles
-                const fullHTML = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="UTF-8">
-                        <style>
-                            ${css}
-                            /* Additional print/docx specific overrides if needed */
-                            body { background: white; font-family: "Calibri", sans-serif; }
-                            .resume-classic, .resume-modern, .resume-executive { margin: 0; box-shadow: none; }
-                        </style>
-                    </head>
-                    <body>
-                        ${resumeContent}
-                    </body>
-                    </html>
-                `;
-
-                // Convert to DOCX
-                // Note: html-docx-js might be loaded as 'htmlDocx' global
-                const converted = htmlDocx.asBlob(fullHTML, {
-                    orientation: 'portrait',
-                    margins: { top: 720, right: 720, bottom: 720, left: 720 } // Twips (1440 twips = 1 inch)
-                });
-
-                // Download
-                const url = window.URL.createObjectURL(converted);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${data.contact.fullName.replace(/\s+/g, '_')}_Resume.docx`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
+            // Construct full HTML
+            const resumeHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        ${css}
+                        body { background: white; font-family: "Calibri", sans-serif; }
+                    </style>
+                </head>
+                <body>
+                    ${resumeContent}
+                </body>
+                </html>
+            `;
+            
+            // Convert HTML to DOCX
+            const converted = htmlDocx.asBlob(resumeHTML, {
+                orientation: 'portrait',
+                margins: { top: 720, right: 720, bottom: 720, left: 720 }
+            });
+            
+            // Download
+            const url = URL.createObjectURL(converted);
+            const a = document.createElement('a');
+            a.href = url;
+            const filename = (data.contact && data.contact.fullName) ? 
+                             `${data.contact.fullName.replace(/\s+/g, '_')}_Resume.docx` : 
+                             'Resume.docx';
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
                 document.body.removeChild(a);
-
-                // Update notification
-                if (notification) {
-                    notification.textContent = 'Download started! You can close this window now.';
-                    notification.style.backgroundColor = '#d4edda';
-                    notification.style.color = '#155724';
-                    notification.style.borderColor = '#c3e6cb';
-                }
-            } catch (err) {
-                console.error('Error generating DOCX:', err);
-                if (notification) {
-                    notification.textContent = 'Error generating DOCX. Please try again.';
-                    notification.style.backgroundColor = '#f8d7da';
-                    notification.style.color = '#721c24';
-                    notification.style.borderColor = '#f5c6cb';
-                }
-            }
+            }, 100);
         }
+        window.generateDocxFromHTML = generateDocxFromHTML;
+
 
         function getExecutiveTemplateHTML(data) {
             // ... (rest of function)
@@ -569,7 +699,7 @@ function openBuilder() {
         // ... (rest of file)
 
 
-        function getExecutiveTemplateHTML(data, forDocx = false) {
+        function getExecutiveTemplateHTML(data) {
             // Helper: Format date to "YYYY-YYYY" or "YYYY-Present"
             const formatDateRange = (startDate, endDate) => {
                 const start = startDate ? new Date(startDate).getFullYear() : '';
@@ -579,7 +709,7 @@ function openBuilder() {
 
             // Helper: Process skills into 3 columns
             const skillsStr = data.skills || '';
-            const skills = skillsStr.split(/\n/).map(s => s.trim().replace(/^[\*\-•]\s*/, '')).filter(s => s);
+            const skills = skillsStr.split(/,|\n/).map(s => s.trim().replace(/^[\*\-•]\s*/, '')).filter(s => s);
             const columns = [[], [], []];
             skills.forEach((skill, index) => {
                 columns[index % 3].push(skill);
@@ -665,112 +795,6 @@ function openBuilder() {
             // Generate summary tagline (customize as needed)
             const summaryTagline = "Organizational Development • Best Practices • Acquisition Leadership";
 
-            if (forDocx) {
-                // Prepare Skills Columns for Table
-                const skillCol1 = columns[0].map(s => `<div>➢ ${s}</div>`).join('');
-                const skillCol2 = columns[1].map(s => `<div>➢ ${s}</div>`).join('');
-                const skillCol3 = columns[2].map(s => `<div>➢ ${s}</div>`).join('');
-
-                // Prepare Experience for Table
-                const experienceTableHTML = experience.map(job => {
-                    const { highlight, bullets } = parseJobDescription(job.description);
-                    return `
-                        <div style="margin-bottom: 18px;">
-                            <table width="100%" style="border-collapse: collapse; margin-bottom: 2px;">
-                                <tr>
-                                    <td align="left" style="font-weight: bold; font-size: 11pt; text-transform: uppercase;">${job.company.toUpperCase()}</td>
-                                    <td align="right" style="font-weight: bold; font-size: 11pt; text-transform: uppercase;">${job.location || ''}</td>
-                                </tr>
-                            </table>
-                            <table width="100%" style="border-collapse: collapse; margin-bottom: 8px;">
-                                <tr>
-                                    <td align="left" style="font-weight: bold; font-size: 11pt; text-transform: uppercase;">${job.jobTitle.toUpperCase()}</td>
-                                    <td align="right" style="font-weight: bold; font-size: 11pt; text-transform: uppercase;">${formatDateRange(job.startDate, job.endDate)}</td>
-                                </tr>
-                            </table>
-                            ${highlight ? `<div style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">${highlight}</div>` : ''}
-                            ${bullets.length > 0 ? `
-                                <ul style="margin: 0 0 8px 0; padding-left: 20px;">
-                                    ${bullets.map(bullet => `<li style="font-size: 11pt; margin-bottom: 4px;">${bullet}</li>`).join('')}
-                                </ul>
-                            ` : ''}
-                        </div>
-                    `;
-                }).join('');
-
-                // Prepare Education for Table
-                const educationTableHTML = education.map(edu => {
-                     const year = edu.graduationDate ? new Date(edu.graduationDate).getFullYear() : '';
-                     return `
-                        <div style="font-size: 11pt; margin-bottom: 8px;">
-                            <table width="100%" style="border-collapse: collapse;">
-                                <tr>
-                                    <td align="left" style="font-weight: bold;">${edu.school.toUpperCase()}</td>
-                                    <td align="right" style="font-weight: bold;">${year}</td>
-                                </tr>
-                            </table>
-                            <div style="margin-top: 2px;">${edu.degree}${edu.fieldOfStudy ? ': ' + edu.fieldOfStudy : ''}</div>
-                        </div>
-                     `;
-                }).join('');
-
-                return `
-                    <table width="100%" style="border: none; font-family: 'Times New Roman', serif; color: #000;">
-                        <tr>
-                            <td style="padding: 0.5in;">
-                                <!-- Header -->
-                                <table width="100%" style="border-bottom: 1pt solid #000; margin-bottom: 18px;">
-                                    <tr>
-                                        <td valign="top" align="left">
-                                            <h1 style="font-size: 26pt; font-weight: bold; text-transform: uppercase; margin: 0; letter-spacing: 2px;">${data.contact.fullName.toUpperCase()}</h1>
-                                        </td>
-                                        <td valign="top" align="right" style="font-size: 10.5pt; line-height: 1.4; white-space: nowrap;">
-                                            ${data.contact.phone}<br>
-                                            ${data.contact.email}<br>
-                                            ${data.contact.location || ''}
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <!-- Professional Title -->
-                                <div style="font-size: 14pt; font-weight: bold; text-transform: uppercase; margin-bottom: 12px;">${professionalTitle}</div>
-
-                                <!-- Summary -->
-                                <div style="margin-bottom: 15px;">
-                                    <div style="font-size: 11pt; font-weight: bold; text-align: center; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">${summaryTagline}</div>
-                                    <div style="font-size: 11pt; text-align: justify; line-height: 1.4; margin-bottom: 12px;">
-                                        Accomplished professional with extensive experience and consummate achievements building multiple best-in-class organizations. A savvy team leader skilled in attracting the most qualified employees and matching them to jobs for which they are well suited. Pivotal contributor to senior operating and leadership executives, providing strategic guidance. Innovative problem solver, strategic decision maker, strong communicator.
-                                    </div>
-                                </div>
-
-                                <!-- Skills Table -->
-                                ${skills.length > 0 ? `
-                                <table width="100%" style="margin-bottom: 15px;">
-                                    <tr>
-                                        <td width="33%" valign="top" style="font-size: 11pt; line-height: 1.3;">${skillCol1}</td>
-                                        <td width="33%" valign="top" style="font-size: 11pt; line-height: 1.3;">${skillCol2}</td>
-                                        <td width="33%" valign="top" style="font-size: 11pt; line-height: 1.3;">${skillCol3}</td>
-                                    </tr>
-                                </table>
-                                ` : ''}
-
-                                <!-- Experience -->
-                                ${experience.length > 0 ? `
-                                    <div style="font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1pt solid #000; padding-bottom: 3px; margin-top: 18px; margin-bottom: 10px; letter-spacing: 0.5px;">PROFESSIONAL EXPERIENCE</div>
-                                    ${experienceTableHTML}
-                                ` : ''}
-
-                                <!-- Education -->
-                                ${education.length > 0 ? `
-                                    <div style="font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1pt solid #000; padding-bottom: 3px; margin-top: 18px; margin-bottom: 10px; letter-spacing: 0.5px;">EDUCATION</div>
-                                    ${educationTableHTML}
-                                ` : ''}
-                            </td>
-                        </tr>
-                    </table>
-                `;
-            }
-
             return `
                 <div class="resume-executive">
                     <div class="executive-border">
@@ -820,7 +844,7 @@ function openBuilder() {
             `;
         }
 
-        function getModernTemplateHTML(data, forDocx = false) {
+        function getModernTemplateHTML(data) {
             // Format dates
             const formatDate = (dateStr) => {
                 if (!dateStr) return '';
@@ -831,7 +855,7 @@ function openBuilder() {
             // Split skills: handle commas or newlines, and strip markdown bullets
             const processSkills = (skillsStr) => {
                 if (!skillsStr) return [];
-                return skillsStr.split(/\n/).map(s => s.trim().replace(/^[\*\-•]\s*/, '')).filter(s => s);
+                return skillsStr.split(/,|\n/).map(s => s.trim().replace(/^[\*\-•]\s*/, '')).filter(s => s);
             };
 
             const skillsList = processSkills(data.skills).map(s => `<li>${s}</li>`).join('');
@@ -851,70 +875,63 @@ function openBuilder() {
             contactHtml += `<div class="resume-item-subtitle">${data.contact.email}</div>`;
             contactHtml += `<div class="resume-item-subtitle">${data.contact.phone}</div>`;
 
-            // Table-based layout (Unified for Web, PDF, and DOCX)
             return `
                 <div class="resume-modern">
-                    <table width="100%" style="border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; color: #333333;">
-                        <!-- Header -->
-                        <tr>
-                            <td colspan="2" style="background-color: #5D7B89; color: white; padding: 30px; text-align: center;">
-                                <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; text-transform: uppercase;">${data.contact.fullName}</h1>
-                                <div style="font-size: 16px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">${data.experience && data.experience.length > 0 ? data.experience[0].jobTitle : 'PROFESSIONAL'}</div>
-                            </td>
-                        </tr>
-                        <!-- Body -->
-                        <tr>
-                            <!-- Left Column -->
-                            <td width="38%" valign="top" style="background-color: #FFFFFF; padding: 48px;">
-                                <div style="margin-bottom: 25px;">
-                                    <div style="font-size: 14px; font-weight: bold; color: #808080; border-bottom: 3px solid #808080; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Personal Profile</div>
-                                    <p style="font-size: 13px; line-height: 1.5;">
-                                        Extremely motivated to constantly develop my skills and grow professionally. I am confident in my ability to come up with interesting ideas.
-                                    </p>
+                    <div class="resume-header">
+                        <div class="header-content">
+                            <h1>${data.contact.fullName}</h1>
+                            <div class="job-title">${data.experience && data.experience.length > 0 ? data.experience[0].jobTitle : 'PROFESSIONAL'}</div>
+                        </div>
+                    </div>
+                    <div class="resume-body">
+                        <div class="resume-left">
+                            <div class="resume-section">
+                                <div class="resume-section-title">Personal Profile</div>
+                                <p class="resume-text">
+                                    Extremely motivated to constantly develop my skills and grow professionally. I am confident in my ability to come up with interesting ideas.
+                                </p>
+                            </div>
+                            
+                            <div class="resume-section">
+                                <div class="resume-section-title">Contact</div>
+                                ${contactHtml}
+                            </div>
+                            
+                            <div class="resume-section">
+                                <div class="resume-section-title">Education</div>
+                                ${data.education ? data.education.map(edu => `
+                                <div class="resume-item">
+                                    <div class="resume-item-title">${edu.school}</div>
+                                    <div class="resume-date">${formatDate(edu.graduationDate)}</div>
+                                    <div class="resume-item-subtitle">${edu.degree} in ${edu.fieldOfStudy}</div>
                                 </div>
-
-                                <div style="margin-bottom: 25px;">
-                                    <div style="font-size: 14px; font-weight: bold; color: #808080; border-bottom: 3px solid #808080; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Contact</div>
-                                    ${contactHtml}
-                                </div>
-
-                                <div style="margin-bottom: 25px;">
-                                    <div style="font-size: 14px; font-weight: bold; color: #808080; border-bottom: 3px solid #808080; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Education</div>
-                                    ${data.education ? data.education.map(edu => `
-                                    <div style="margin-bottom: 15px;">
-                                        <div style="font-weight: bold; font-size: 14px;">${edu.school}</div>
-                                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${formatDate(edu.graduationDate)}</div>
-                                        <div style="font-size: 14px; margin-bottom: 5px;">${edu.degree} in ${edu.fieldOfStudy}</div>
+                                `).join('') : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="resume-right">
+                            <div class="resume-section">
+                                <div class="resume-section-title">Skills</div>
+                                <ul class="resume-list">
+                                    ${skillsList}
+                                </ul>
+                            </div>
+                            
+                            <div class="resume-section">
+                                <div class="resume-section-title">Work Experience</div>
+                                ${data.experience ? data.experience.map((exp, idx) => `
+                                <div class="resume-item" ${idx > 0 ? 'style="margin-top: 15px;"' : ''}>
+                                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px;">
+                                        <div class="resume-item-title">${exp.company},</div>
+                                        <div style="font-size: 14px; font-weight: normal;">${exp.jobTitle}</div>
                                     </div>
-                                    `).join('') : ''}
+                                    <div class="resume-date" style="font-size: 11px; color: #999; margin-bottom: 8px;">${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : 'PRESENT'}</div>
+                                    ${formatDescription(exp.description)}
                                 </div>
-                            </td>
-
-                            <!-- Right Column -->
-                            <td width="62%" valign="top" style="background-color: #F2F2F2; padding: 38px;">
-                                <div style="margin-bottom: 25px;">
-                                    <div style="font-size: 14px; font-weight: bold; color: #808080; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Skills</div>
-                                    <ul class="resume-list" style="list-style: none; padding: 0;">
-                                        ${skillsList}
-                                    </ul>
-                                </div>
-
-                                <div style="margin-bottom: 25px;">
-                                    <div style="font-size: 14px; font-weight: bold; color: #808080; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Work Experience</div>
-                                    ${data.experience ? data.experience.map((exp, idx) => `
-                                    <div style="margin-bottom: 15px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px;">
-                                            <div style="font-weight: bold; font-size: 14px;">${exp.company},</div>
-                                            <div style="font-size: 14px; font-weight: normal;">${exp.jobTitle}</div>
-                                        </div>
-                                        <div style="font-size: 11px; color: #999; margin-bottom: 8px;">${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : 'PRESENT'}</div>
-                                        ${formatDescription(exp.description)}
-                                    </div>
-                                    `).join('') : ''}
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                                `).join('') : ''}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
         }
@@ -930,7 +947,7 @@ function openBuilder() {
             // Split skills into two columns: handle commas or newlines, and strip markdown bullets
             const processSkills = (skillsStr) => {
                 if (!skillsStr) return [];
-                return skillsStr.split(/\n/).map(s => s.trim().replace(/^[\*\-•]\s*/, '')).filter(s => s);
+                return skillsStr.split(/,|\n/).map(s => s.trim().replace(/^[\*\-•]\s*/, '')).filter(s => s);
             };
 
             const skills = processSkills(data.skills);
@@ -1073,9 +1090,6 @@ function openBuilder() {
                         document.getElementById('email').value = resumeData.contact.email || '';
                         document.getElementById('phone').value = resumeData.contact.phone || '';
                         document.getElementById('location').value = resumeData.contact.location || '';
-                        if (resumeData.experienceLevel) {
-                            document.getElementById('experienceLevel').value = resumeData.experienceLevel;
-                        }
                     }
 
                     // Step 2: Experience
@@ -1211,36 +1225,16 @@ function openBuilder() {
                     descriptions.forEach(descInput => {
                         const text = descInput.value;
                         if (text && text.trim() !== '') {
-                            // Find the job title in the same entry group
-                            const entryGroup = descInput.closest('.entry-group');
-                            const jobTitle = entryGroup ? entryGroup.querySelector('.job-title-input').value : '';
-                            const expLevel = document.getElementById('experienceLevel').value || 'Mid Level';
-
-                            let prompt = `Rewrite the following work-experience text for a "${jobTitle}" position at a ${expLevel} level. `;
-                            
-                            // Tailor instructions based on experience level
-                            if (expLevel.includes('Entry') || expLevel.includes('Junior')) {
-                                prompt += `Keep the tone eager and professional, focusing on learning, potential, and core responsibilities. Avoid overly complex jargon. `;
-                            } else if (expLevel.includes('Senior') || expLevel.includes('Executive')) {
-                                prompt += `Use authoritative, sophisticated professional language and industry-specific terminology suitable for a senior leader. Focus on strategic impact, leadership, and results. `;
-                            } else {
-                                // Mid Level
-                                prompt += `Use clear, professional language. Focus on execution, specific achievements, and competency. `;
-                            }
-
-                            prompt += `Preserve the original meaning and accuracy, but you may add common responsibilities or duties that are typically associated with this job title if the provided content is incomplete. Do NOT invent accomplishments, metrics, awards, or results that are not implied. `;
-                            prompt += `CRITICAL INSTRUCTIONS: Return ONLY the rewritten text. Do NOT include any introductory or concluding remarks (e.g., "Here is a rewrite..."). Do NOT use markdown bolding (like **text**). Ensure the response is concise, not wordy, and optimized for ATS reading. `;
+                            let prompt = `Rewrite the following work-experience text to be professional, concise, and achievement-oriented. Preserve the original meaning and accuracy, but you may add common responsibilities or duties that are typically associated with this job title if the provided content is incomplete. Do NOT invent accomplishments, metrics, awards, or results that are not implied. You may add realistic day-to-day responsibilities, scope details, or context that aligns with standard industry expectations for this role. Use strong action verbs, improve clarity, and keep the tone appropriate for a resume. Return ONLY the rewritten text, formatted as clean resume-ready bullet points or short paragraphs (whichever fits the input best).`;
                             
                             if (isModern) {
-                                prompt += `Do NOT use bullet points. Separate distinct achievements with a newline character.`;
+                                prompt += ` Do NOT use bullet points. Separate distinct achievements with a newline character.`;
                             } else {
-                                prompt += `Use bullet points for each achievement.`;
+                                prompt += ` Use bullet points for each achievement.`;
                             }
                             
                             prompt += ` Text: "${text}"`;
                             
-                            console.log('Generating prompt for:', jobTitle, 'Level:', expLevel); // Debug log
-
                             // Call Cloud Function for each description
                             promises.push(polishFunction({ prompt: prompt }).then(result => {
                                 if (result.data && result.data.text) descInput.value = result.data.text;

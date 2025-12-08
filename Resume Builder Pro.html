@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeCreator - AI-Powered Resume Builder</title>
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #06b6d4;
+            --accent: #10b981;
+            --accent-dark: #059669;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f8fafc;
+            --light-secondary: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #cbd5e1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            line-height: 1.6;
+            letter-spacing: -0.3px;
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        #signInLink {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        #signInLink:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+        }
+
+        #signInLink::after {
+            display: none;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: slideInUp 0.6s ease-out 0.2s backwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: slideInUp 0.6s ease-out 0.4s backwards;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ========== CONTAINER ========== */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ========== SECTION HEADER ========== */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .section-header h2 {
+            font-size: 42px;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -1.5px;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== FEATURES ========== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(6, 182, 212, 0.15);
+            border-color: rgba(6, 182, 212, 0.2);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 15px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* ========== STEPS ========== */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .step {
+            position: relative;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+            transition: all 0.3s;
+        }
+
+        .step:hover .step-number {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(6, 182, 212, 0.4);
+        }
+
+        .step h3 {
+            font-size: 18px;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .step p {
+            color: var(--text-light);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* ========== TEMPLATES GRID ========== */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .template-card {
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .template-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .template-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(6, 182, 212, 0.2);
+        }
+
+        .template-card:hover::before {
+            opacity: 1;
+        }
+
+        .template-preview {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: var(--text-light);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .template-preview::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .template-card:hover .template-preview::after {
+            opacity: 1;
+        }
+
+        .template-name {
+            padding: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            font-size: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .template-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(16, 185, 129, 0.15));
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        /* ========== FAQ ========== */
+        .faq-section {
+            margin-bottom: 4rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .faq {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .faq:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-item:hover {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), rgba(16, 185, 129, 0.05));
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text);
+            user-select: none;
+        }
+
+        .faq-toggle {
+            font-size: 20px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--primary);
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            display: none;
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.7;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== MODAL ========== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideInCenter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInCenter {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 26px;
+            margin: 0;
+            color: var(--text);
+            font-weight: 800;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        /* ========== FORMS ========== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .entry-group {
+            background: rgba(6, 182, 212, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 2px solid rgba(6, 182, 212, 0.15);
+            transition: all 0.3s;
+        }
+
+        .entry-group:hover {
+            background: rgba(6, 182, 212, 0.08);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-remove {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .btn-remove:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .builder-steps {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .builder-steps.active {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .step-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-light);
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .step-dot.completed {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .section-header h2 {
+                font-size: 28px;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                font-size: 12px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .steps {
+                padding: 2rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== HEADER ========== -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">📄 ResumeCreator</a>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#templates">Templates</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#faq">FAQ</a>
+                <a href="#" id="signInLink" onclick="openSignInModal(event)">Sign In</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ========== HERO ========== -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Craft Your Perfect Resume</h1>
+            <p>Create a professional resume in minutes with our AI-powered builder. Stand out to employers and land your dream job.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="openBuilder()">Start Building</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('templates')">View Templates</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FEATURES ========== -->
+    <section class="container" id="features">
+        <div class="section-header">
+            <h2>Why Choose ResumeCreator?</h2>
+            <p>Everything you need to create a resume that stands out</p>
+        </div>
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Complete your resume in just 14 minutes with our intuitive builder</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Beautiful Templates</h3>
+                <p>Choose from expertly designed templates for your industry</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>ATS Optimized</h3>
+                <p>All resumes are optimized for Applicant Tracking Systems</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h3>Smart Suggestions</h3>
+                <p>Get job-specific content suggestions as you build</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📥</div>
+                <h3>Easy Export</h3>
+                <p>Export as PDF, Word, or text in seconds</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👨‍💼</div>
+                <h3>Expert Feedback</h3>
+                <p>Get feedback from certified resume writers</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TEMPLATES ========== -->
+    <section class="container" id="templates">
+        <div class="section-header">
+            <h2>Choose Your Template</h2>
+            <p>It's quick, intuitive, and tailored to help you achieve your career goals</p>
+        </div>
+        <div class="templates-grid">
+            <div class="template-card" onclick="selectTemplate('modern')">
+                <div class="template-preview">📱</div>
+                <div class="template-name">Modern <span class="template-tag">Popular</span></div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('classic')">
+                <div class="template-preview">📄</div>
+                <div class="template-name">Classic <span class="template-tag">Timeless</span></div>
+            </div>
+            <div class="template-card" onclick="selectTemplate('executive')">
+                <div class="template-preview">👔</div>
+                <div class="template-name">Executive <span class="template-tag">Premium</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== HOW IT WORKS ========== -->
+    <section class="container" id="how-it-works">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Three simple steps to create your resume</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Choose Template</h3>
+                <p>Select the perfect template for your job search and add your contact information</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Add Your Info</h3>
+                <p>Add your work experience, skills, education, and get smart suggestions</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Download</h3>
+                <p>Review your resume and download in PDF, Word, or other formats</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FAQ ========== -->
+    <section class="container" id="faq">
+        <div class="section-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about ResumeCreator</p>
+        </div>
+        <div class="faq-section">
+            <div class="faq">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>What templates are available?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">We offer Modern, Classic, and Executive templates. Each is professionally designed and optimized for ATS systems. You can switch templates anytime before exporting.</div>
+                </div>
+            </div>
+            <div class="faq">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>How long does it take to create a resume?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">Most users complete their resume in 10-15 minutes. The exact time depends on how much content you need to add and edit.</div>
+                </div>
+            </div>
+            <div class="faq">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>Can I export my resume in different formats?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">Yes! You can export your resume as PDF, Word (.docx), or plain text. We recommend PDF for submitting online.</div>
+                </div>
+            </div>
+            <div class="faq">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>Is my resume information secure?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">We use industry-standard encryption to protect your data. Your resume is only stored with your account and is never shared with third parties.</div>
+                </div>
+            </div>
+            <div class="faq">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>Do you offer customer support?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">Absolutely! Our support team is available 24/7 via email and live chat. We're here to help with any questions.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== AUTH MODAL ========== -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sign In</h2>
+                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="authEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="authPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                <div class="auth-toggle-text">
+                    Don't have an account? <a href="#" onclick="toggleAuthMode(event)" style="color: var(--primary); font-weight: 600;">Create one</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== BUILDER MODAL ========== -->
+    <div id="builderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Resume Builder</h2>
+                <button class="close-btn" onclick="closeBuilder()">&times;</button>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step-dot active" data-step="1">1</div>
+                <div class="step-dot" data-step="2">2</div>
+                <div class="step-dot" data-step="3">3</div>
+                <div class="step-dot" data-step="4">4</div>
+            </div>
+
+            <!-- Step 1: Contact Info -->
+            <div id="step1" class="builder-steps active">
+                <h3 style="margin-bottom: 1.5rem; color: var(--text);">Contact Information</h3>
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="fullName" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="phone" placeholder="(555) 123-4567" required>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="location" placeholder="New York, NY">
+                </div>
+            </div>
+
+            <!-- Step 2: Experience -->
+            <div id="step2" class="builder-steps">
+                <h3 style="margin-bottom: 1.5rem; color: var(--text);">Work Experience</h3>
+                <div id="experience-container"></div>
+                <button type="button" class="btn btn-outline" onclick="addExperienceEntry()" style="width: 100%;">+ Add Another Position</button>
+            </div>
+
+            <!-- Step 3: Education -->
+            <div id="step3" class="builder-steps">
+                <h3 style="margin-bottom: 1.5rem; color: var(--text);">Education</h3>
+                <div id="education-container"></div>
+                <button type="button" class="btn btn-outline" onclick="addEducationEntry()" style="width: 100%;">+ Add Another School</button>
+            </div>
+
+            <!-- Step 4: Skills -->
+            <div id="step4" class="builder-steps">
+                <h3 style="margin-bottom: 1.5rem; color: var(--text);">Skills & Summary</h3>
+                <div class="form-group">
+                    <label>Skills (comma-separated)</label>
+                    <textarea id="skills" placeholder="JavaScript, React, Python, Project Management..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Professional Summary</label>
+                    <textarea id="summary" placeholder="Brief overview of your professional background and goals..."></textarea>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button type="button" class="btn btn-outline" id="prevBtn" onclick="prevStep()" style="display: none;">← Previous</button>
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStepHandler()">Next →</button>
+                <button type="button" class="btn btn-primary" id="completeBtn" onclick="completeResume()" style="display: none; background: linear-gradient(135deg, var(--accent), var(--accent-dark));">Create Resume</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 ResumeCreator. All rights reserved. | Build Your Future Today</p>
+    </footer>
+
+    <script>
+        let resumeData = {
+            selectedTemplate: 'classic',
+            contact: {},
+            experience: [],
+            education: [],
+            skills: '',
+            summary: ''
+        };
+
+        let currentStep = 1;
+
+        // ========== MODAL FUNCTIONS ==========
+        function openSignInModal(e) {
+            e.preventDefault();
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function openBuilder() {
+            document.getElementById('builderModal').classList.add('active');
+            currentStep = 1;
+            showStep(1);
+            if (!document.querySelector('#experience-container .entry-group')) {
+                addExperienceEntry();
+            }
+            if (!document.querySelector('#education-container .entry-group')) {
+                addEducationEntry();
+            }
+        }
+
+        function closeBuilder() {
+            document.getElementById('builderModal').classList.remove('active');
+        }
+
+        // ========== BUILDER NAVIGATION ==========
+        function nextStepHandler() {
+            if (validateStep(currentStep)) {
+                saveStepData(currentStep);
+                if (currentStep < 4) {
+                    nextStep(currentStep + 1);
+                } else {
+                    completeResume();
+                }
+            } else {
+                alert('Please fill in all required fields');
+            }
+        }
+
+        function nextStep(step) {
+            currentStep = step;
+            showStep(step);
+            updateStepIndicator();
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                saveStepData(currentStep);
+                currentStep--;
+                showStep(currentStep);
+                updateStepIndicator();
+            }
+        }
+
+        function showStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`step${i}`);
+                if (el) el.classList.remove('active');
+            }
+            document.getElementById(`step${step}`).classList.add('active');
+
+            // Update buttons
+            document.getElementById('prevBtn').style.display = step > 1 ? 'block' : 'none';
+            document.getElementById('nextBtn').style.display = step < 4 ? 'block' : 'none';
+            document.getElementById('completeBtn').style.display = step === 4 ? 'block' : 'none';
+        }
+
+        function updateStepIndicator() {
+            document.querySelectorAll('.step-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i + 1 === currentStep) {
+                    dot.classList.add('active');
+                } else if (i + 1 < currentStep) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                return document.getElementById('fullName').value.trim() &&
+                       document.getElementById('email').value.trim() &&
+                       document.getElementById('phone').value.trim();
+            }
+            if (step === 2) {
+                const titles = document.querySelectorAll('#experience-container .job-title-input');
+                const companies = document.querySelectorAll('#experience-container .company-input');
+                return Array.from(titles).some((t, i) => t.value && companies[i].value);
+            }
+            if (step === 3) {
+                const schools = document.querySelectorAll('#education-container .school-input');
+                const degrees = document.querySelectorAll('#education-container .degree-input');
+                return Array.from(schools).some((s, i) => s.value && degrees[i].value);
+            }
+            return true;
+        }
+
+        function saveStepData(step) {
+            if (step === 1) {
+                resumeData.contact = {
+                    fullName: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    location: document.getElementById('location').value
+                };
+            } else if (step === 2) {
+                resumeData.experience = [];
+                document.querySelectorAll('#experience-container .entry-group').forEach(group => {
+                    const jobTitle = group.querySelector('.job-title-input').value;
+                    const company = group.querySelector('.company-input').value;
+                    if (jobTitle && company) {
+                        resumeData.experience.push({
+                            jobTitle,
+                            company,
+                            startDate: group.querySelector('.start-date-input').value,
+                            endDate: group.querySelector('.end-date-input').value,
+                            description: group.querySelector('.description-input').value
+                        });
+                    }
+                });
+            } else if (step === 3) {
+                resumeData.education = [];
+                document.querySelectorAll('#education-container .entry-group').forEach(group => {
+                    const school = group.querySelector('.school-input').value;
+                    const degree = group.querySelector('.degree-input').value;
+                    if (school && degree) {
+                        resumeData.education.push({
+                            school,
+                            degree,
+                            fieldOfStudy: group.querySelector('.field-input').value,
+                            graduationDate: group.querySelector('.grad-date-input').value
+                        });
+                    }
+                });
+            } else if (step === 4) {
+                resumeData.skills = document.getElementById('skills').value;
+                resumeData.summary = document.getElementById('summary').value;
+            }
+        }
+
+        function addExperienceEntry() {
+            const container = document.getElementById('experience-container');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'entry-group';
+            div.innerHTML = `
+                ${index > 0 ? '<button type="button" class="btn-remove" onclick="removeEntry(this)">Remove</button>' : ''}
+                <div class="form-group">
+                    <label>Job Title *</label>
+                    <input type="text" class="job-title-input" placeholder="Senior Developer" required>
+                </div>
+                <div class="form-group">
+                    <label>Company Name *</label>
+                    <input type="text" class="company-input" placeholder="Tech Company Inc." required>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="text" class="start-date-input" placeholder="Jan 2020">
+                </div>
+                <div class="form-group">
+                    <label>End Date (leave blank if current)</label>
+                    <input type="text" class="end-date-input" placeholder="Dec 2022">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="description-input" placeholder="Describe your responsibilities and achievements..."></textarea>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function addEducationEntry() {
+            const container = document.getElementById('education-container');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'entry-group';
+            div.innerHTML = `
+                ${index > 0 ? '<button type="button" class="btn-remove" onclick="removeEntry(this)">Remove</button>' : ''}
+                <div class="form-group">
+                    <label>School/University *</label>
+                    <input type="text" class="school-input" placeholder="University Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Degree *</label>
+                    <input type="text" class="degree-input" placeholder="Bachelor of Science" required>
+                </div>
+                <div class="form-group">
+                    <label>Field of Study *</label>
+                    <input type="text" class="field-input" placeholder="Computer Science" required>
+                </div>
+                <div class="form-group">
+                    <label>Graduation Date</label>
+                    <input type="text" class="grad-date-input" placeholder="May 2018">
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeEntry(btn) {
+            btn.closest('.entry-group').remove();
+        }
+
+        function completeResume() {
+            saveStepData(4);
+            if (!resumeData.contact.fullName) {
+                alert('Please complete all sections');
+                return;
+            }
+            alert('✓ Resume created successfully! Your resume is ready to download.');
+            closeBuilder();
+        }
+
+        function selectTemplate(template) {
+            resumeData.selectedTemplate = template;
+            openBuilder();
+        }
+
+        function toggleFaq(element) {
+            const faqItem = element.closest('.faq-item');
+            faqItem.classList.toggle('active');
+        }
+
+        function handleSignIn(e) {
+            e.preventDefault();
+            alert('Sign in functionality would connect to Firebase');
+            closeAuthModal();
+        }
+
+        function toggleAuthMode(e) {
+            e.preventDefault();
+            alert('Create account mode - would toggle form');
+        }
+
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>

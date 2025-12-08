@@ -939,7 +939,7 @@
 /* Double Border Structure */
 /* Double Border Structure */
 .resume-executive .executive-border {
-    border: 3px double #000; /* Double line border effect */
+    border: none; /* Double line border removed */
     padding: 0.5in;
     min-height: 9in; /* Reduced to prevent spillover */
 }
@@ -1169,7 +1169,7 @@
     }
     
     .resume-executive .executive-border {
-        border: 2px double #000;
+        border: none;
     }
     
     * {
