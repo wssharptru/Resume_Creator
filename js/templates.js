@@ -208,12 +208,14 @@ function getExecutiveTemplateHTML(data, forDocx = false) {
                         <div style="font-size: 14pt; font-weight: bold; text-transform: uppercase; margin-bottom: 12px;">${professionalTitle}</div>
 
                         <!-- Summary -->
+                        ${data.professionalSummary ? `
                         <div style="margin-bottom: 15px;">
-                            <div style="font-size: 11pt; font-weight: bold; text-align: center; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">${summaryTagline}</div>
+                            ${summaryTagline ? `<div style="font-size: 11pt; font-weight: bold; text-align: center; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">${summaryTagline}</div>` : ''}
                             <div style="font-size: 11pt; text-align: justify; line-height: 1.4; margin-bottom: 12px;">
-                                Accomplished professional with extensive experience and consummate achievements building multiple best-in-class organizations. A savvy team leader skilled in attracting the most qualified employees and matching them to jobs for which they are well suited. Pivotal contributor to senior operating and leadership executives, providing strategic guidance. Innovative problem solver, strategic decision maker, strong communicator.
+                                ${data.professionalSummary}
                             </div>
                         </div>
+                        ` : ''}
 
                         <!-- Skills Table -->
                         ${skills.length > 0 ? `
@@ -262,12 +264,14 @@ function getExecutiveTemplateHTML(data, forDocx = false) {
                 <div class="job-title-headline">${professionalTitle}</div>
 
                 <!-- Summary Section -->
+                ${data.professionalSummary ? `
                 <div class="summary-section">
                     <div class="summary-tagline">${summaryTagline}</div>
                     <div class="summary-text">
-                        Accomplished professional with extensive experience and consummate achievements building multiple best-in-class organizations. A savvy team leader skilled in attracting the most qualified employees and matching them to jobs for which they are well suited. Pivotal contributor to senior operating and leadership executives, providing strategic guidance. Innovative problem solver, strategic decision maker, strong communicator.
+                        ${data.professionalSummary}
                     </div>
                 </div>
+                ` : ''}
 
                 <!-- Skills Section -->
                 ${skills.length > 0 ? `
@@ -330,12 +334,14 @@ function getModernTemplateHTML(data, forDocx = false) {
                 <tr>
                     <!-- Left Column -->
                     <td width="38%" valign="top" style="background-color: #FFFFFF; padding: 48px;">
+                        ${data.professionalSummary ? `
                         <div style="margin-bottom: 25px;">
                             <div style="font-size: 14px; font-weight: bold; color: #808080; border-bottom: 3px solid #808080; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Personal Profile</div>
                             <p style="font-size: 13px; line-height: 1.5;">
-                                Extremely motivated to constantly develop my skills and grow professionally. I am confident in my ability to come up with interesting ideas.
+                                ${data.professionalSummary}
                             </p>
                         </div>
+                        ` : ''}
 
                         <div style="margin-bottom: 25px;">
                             <div style="font-size: 14px; font-weight: bold; color: #808080; border-bottom: 3px solid #808080; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Contact</div>
@@ -430,13 +436,14 @@ function getClassicTemplateHTML(data, forDocx = false) {
                     </p>
                 </header>
 
+                ${data.professionalSummary ? `
                 <section>
                     <h2 class="section-title" style="${sectionTitleStyle}">PROFESSIONAL SUMMARY</h2>
                     <p class="summary">
-                        Motivated professional with experience in the industry. Dedicated to achieving results and contributing to team success.
-                        Implement cost control measures to ensure operations remain within company targets. Maximize bottom-line performance.
+                        ${data.professionalSummary}
                     </p>
                 </section>
+                ` : ''}
 
                 <section>
                     <h2 class="section-title" style="${sectionTitleStyle}">SKILLS</h2>

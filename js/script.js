@@ -56,7 +56,7 @@ function openBuilder() {
         }
 
         function showStep(step) {
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 5; i++) {
                 const stepEl = document.getElementById(`step${i}`);
                 if (stepEl) {
                     stepEl.style.display = i === step ? 'block' : 'none';
@@ -95,6 +95,9 @@ function openBuilder() {
                     }
                 }
                 return valid;
+            }
+            if (step === 5) {
+                return true; // Optional
             }
             return true;
         }
@@ -142,6 +145,8 @@ function openBuilder() {
                 });
             } else if (step === 4) {
                 resumeData.skills = document.getElementById('skills').value;
+            } else if (step === 5) {
+                resumeData.professionalSummary = document.getElementById('professionalSummary').value;
             }
         }
 
@@ -208,7 +213,7 @@ function openBuilder() {
         }
 
         function completeResume() {
-            saveStepData(4);
+            saveStepData(5);
             
             if (!resumeData.contact || !resumeData.contact.fullName) {
                 alert('Please complete all sections');
@@ -234,6 +239,11 @@ function openBuilder() {
             if (data.contact.location) resume += ` | ${data.contact.location}`;
             resume += `\n\n`;
             
+            if (data.professionalSummary) {
+                resume += `PROFESSIONAL SUMMARY\n`;
+                resume += `${data.professionalSummary}\n\n`;
+            }
+
             resume += `PROFESSIONAL EXPERIENCE\n`;
             if (data.experience && data.experience.length > 0) {
                 data.experience.forEach(exp => {
@@ -512,6 +522,11 @@ function openBuilder() {
                         document.getElementById('skills').value = resumeData.skills;
                     }
 
+                    // Step 5: Summary
+                    if (resumeData.professionalSummary) {
+                        document.getElementById('professionalSummary').value = resumeData.professionalSummary;
+                    }
+
                     alert('Resume data loaded successfully!');
                     
                     // Reset file input so same file can be selected again if needed
@@ -570,6 +585,9 @@ function openBuilder() {
                         break;
                     }
                 }
+            } else if (section === 'summary') {
+                // Summary can be generated from scratch, so we always allow it
+                hasContent = true; 
             }
 
             if (!hasContent) {
@@ -645,6 +663,61 @@ function openBuilder() {
                     });
                     
                     await Promise.all(promises);
+                } else if (section === 'summary') {
+                    const targetElement = document.getElementById('professionalSummary');
+                    const existingSummary = targetElement.value;
+                    const expLevel = document.getElementById('experienceLevel').value || 'Mid Level';
+                    const skills = document.getElementById('skills').value || '';
+                    
+                    // Gather job titles and descriptions
+                    let jobTitlesAndDescriptions = "";
+                    const jobTitleInputs = document.querySelectorAll('.job-title-input');
+                    const companyInputs = document.querySelectorAll('.company-input');
+                    const descInputs = document.querySelectorAll('.description-input');
+                    
+                    for (let i = 0; i < jobTitleInputs.length; i++) {
+                        if (jobTitleInputs[i].value) {
+                            jobTitlesAndDescriptions += `Job: ${jobTitleInputs[i].value} at ${companyInputs[i].value}\nDescription: ${descInputs[i].value}\n\n`;
+                        }
+                    }
+
+                    const prompt = `
+You are a professional resume writer.
+
+Task:
+Create or improve a Professional Summary for a resume.
+
+Context:
+Experience Level: ${expLevel}
+
+Work Experience:
+${jobTitlesAndDescriptions}
+
+Skills:
+${skills}
+
+Existing Summary (if any):
+${existingSummary}
+
+Instructions:
+- Write a concise professional summary of 3–5 sentences.
+- If an existing summary is provided, improve clarity, tone, and impact.
+- If no summary is provided, generate one using the experience and skills.
+- Match tone to experience level:
+  - Entry Level: growth-oriented, foundational skills, motivation
+  - Mid Level: execution, ownership, practical impact
+  - Senior / Executive: leadership, strategy, scope, influence
+- Do NOT invent achievements, metrics, company names, or outcomes.
+- Do NOT use bullet points.
+- Do NOT use markdown or special formatting.
+- Keep language ATS-friendly and professional.
+- Return ONLY the summary text.
+`.trim();
+
+                    const result = await polishFunction({ prompt: prompt });
+                    if (result.data && result.data.text) {
+                        targetElement.value = result.data.text;
+                    }
                 }
             } catch (error) {
                 console.error('Error polishing text:', error);

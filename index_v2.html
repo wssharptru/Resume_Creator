@@ -3,16 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResumeCreator - Create Your Perfect Resume</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <title>ResumeCreator - Modern V2</title>
+    <link rel="stylesheet" href="css/styles_v2.css">
     <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
+    <style>
+        /* Quick badge for V2 identification */
+        .v2-badge {
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header>
         <div class="header-container">
-            <a href="#" class="logo">ResumeCreator</a>
+            <a href="#" class="logo">
+                ResumeCreator <span class="v2-badge">V2</span>
+            </a>
             <nav class="nav-links">
                 <a href="#templates">Templates</a>
                 <a href="#features">Features</a>
@@ -22,7 +36,7 @@
             </nav>
             <div id="userInfo" style="display: none; align-items: center; gap: 15px;">
                 <span id="userEmailDisplay" style="font-size: 14px; color: var(--color-text-light);"></span>
-                <button class="btn-outline" id="signOutBtn" onclick="handleSignOut()" style="padding: 5px 10px; font-size: 14px;">Sign Out</button>
+                <button class="btn-outline" id="signOutBtn" onclick="handleSignOut()" style="padding: 8px 16px; font-size: 13px;">Sign Out</button>
             </div>
         </div>
     </header>
@@ -40,7 +54,7 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="container" style="margin-bottom: var(--spacing-xl);">
+    <section id="features" class="container" style="margin-bottom: var(--spacing-2xl);">
         <div class="section-header">
             <h2>Why Use ResumeCreator?</h2>
             <p>Everything you need to create a resume that stands out</p>
@@ -80,7 +94,7 @@
     </section>
 
     <!-- Templates Section -->
-    <section id="templates" class="container" style="margin-bottom: var(--spacing-xl);">
+    <section id="templates" class="container" style="margin-bottom: var(--spacing-2xl);">
         <div class="section-header">
             <h2>Resume Templates for Every Job</h2>
             <p>Choose from our collection of industry-specific templates</p>
@@ -90,7 +104,7 @@
                 <div class="template-preview">
                     <img src="images/classic_template_preview.png" alt="Classic Template Preview" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
                 </div>
-                <div style="padding: var(--spacing-md);">
+                <div style="padding: 24px;">
                     <div class="template-name">Classic Template</div>
                     <span class="template-tag">Professional</span>
                 </div>
@@ -99,44 +113,52 @@
                 <div class="template-preview">
                     <img src="images/modern_template_preview.png" alt="Modern Template Preview" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
                 </div>
-                <div style="padding: var(--spacing-md);">
+                <div style="padding: 24px;">
                     <div class="template-name">Modern Template</div>
                     <span class="template-tag">Tech Friendly</span>
                 </div>
             </div>
             <div class="template-card" onclick="selectTemplate('executive')">
                 <div class="template-preview">
-                    <img src="images/executive_template_preview.png" alt="Executive Template">
+                    <img src="images/executive_template_preview.png" alt="Executive Template" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
                 </div>
-                <div style="padding: var(--spacing-md);">
+                <div style="padding: 24px;">
                     <div class="template-name">Executive Template</div>
                     <span class="template-tag">Leadership</span>
                 </div>
             </div>
             <div class="template-card" onclick="selectTemplate('creative - comming soon')">
-                <div class="template-preview">Creative Template Preview</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                    Coming Soon
+                </div>
+                <div style="padding: 24px;">
                     <div class="template-name">Creative Template</div>
                     <span class="template-tag">Colorful</span>
                 </div>
             </div>
             <div class="template-card" onclick="selectTemplate('minimal - comming soon')">
-                <div class="template-preview">Minimal Template Preview</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                    Coming Soon
+                </div>
+                <div style="padding: 24px;">
                     <div class="template-name">Minimal Template</div>
                     <span class="template-tag">Clean</span>
                 </div>
             </div>
             <div class="template-card" onclick="selectTemplate('technical - comming soon')">
-                <div class="template-preview">Executive Template Preview</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                    Coming Soon
+                </div>
+                <div style="padding: 24px;">
                     <div class="template-name">Executive Template</div>
                     <span class="template-tag">Leadership</span>
                 </div>
             </div>
             <div class="template-card" onclick="selectTemplate('graduate')">
-                <div class="template-preview">Graduate Template Preview</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                    Coming Soon
+                </div>
+                <div style="padding: 24px;">
                     <div class="template-name">Graduate Template</div>
                     <span class="template-tag">Student</span>
                 </div>
@@ -145,7 +167,7 @@
     </section>
 
     <!-- Steps Section -->
-    <section class="container" style="margin-bottom: var(--spacing-xl);">
+    <section class="container" style="margin-bottom: var(--spacing-2xl);">
         <div class="section-header">
             <h2>Build Your Resume in 3 Simple Steps</h2>
             <p>It's quick, intuitive, and tailored to help you achieve your career goals</p>
@@ -170,45 +192,46 @@
     </section>
 
     <!-- Examples Section -->
-    <section id="examples" class="container" style="margin-bottom: var(--spacing-xl);">
+    <section id="examples" class="container" style="margin-bottom: var(--spacing-2xl);">
         <div class="section-header">
             <h2>Get Inspired with Resume Examples</h2>
             <p>See what high-quality resumes look like for your industry</p>
         </div>
+        <!-- Using a simple grid similar to templates for consistency -->
         <div class="templates-grid">
             <div class="template-card">
-                <div class="template-preview">Student Resume</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display:flex; align-items:center; justify-content:center;">Student Resume</div>
+                <div style="padding: 24px;">
                     <div class="template-name">Student Resume Example</div>
                 </div>
             </div>
             <div class="template-card">
-                <div class="template-preview">Manager Resume</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display:flex; align-items:center; justify-content:center;">Manager Resume</div>
+                <div style="padding: 24px;">
                     <div class="template-name">Manager Resume Example</div>
                 </div>
             </div>
             <div class="template-card">
-                <div class="template-preview">Tech Professional Resume</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display:flex; align-items:center; justify-content:center;">Tech Professional Resume</div>
+                <div style="padding: 24px;">
                     <div class="template-name">Tech Resume Example</div>
                 </div>
             </div>
             <div class="template-card">
-                <div class="template-preview">Designer Resume</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display:flex; align-items:center; justify-content:center;">Designer Resume</div>
+                <div style="padding: 24px;">
                     <div class="template-name">Designer Resume Example</div>
                 </div>
             </div>
             <div class="template-card">
-                <div class="template-preview">Teacher Resume</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display:flex; align-items:center; justify-content:center;">Teacher Resume</div>
+                <div style="padding: 24px;">
                     <div class="template-name">Teacher Resume Example</div>
                 </div>
             </div>
             <div class="template-card">
-                <div class="template-preview">Sales Resume</div>
-                <div style="padding: var(--spacing-md);">
+                <div class="template-preview" style="display:flex; align-items:center; justify-content:center;">Sales Resume</div>
+                <div style="padding: 24px;">
                     <div class="template-name">Sales Resume Example</div>
                 </div>
             </div>
@@ -216,7 +239,7 @@
     </section>
 
     <!-- FAQ Section -->
-    <section id="faq" class="container" style="margin-bottom: var(--spacing-xl);">
+    <section id="faq" class="container" style="margin-bottom: var(--spacing-2xl);">
         <div class="section-header">
             <h2>Frequently Asked Questions</h2>
             <p>Everything you need to know about ResumeCreator</p>
@@ -280,10 +303,10 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="hero" style="margin-bottom: 0; margin-top: var(--spacing-xl);">
+    <section class="hero" style="margin-bottom: 0; margin-top: var(--spacing-2xl); background: none; box-shadow: none;">
         <div class="container">
-            <h2 style="font-size: 36px; margin-bottom: var(--spacing-md);">Ready to Land Your Dream Job?</h2>
-            <p style="font-size: 18px; margin-bottom: var(--spacing-lg);">Join thousands of job seekers who've already been hired with ResumeCreator</p>
+            <h2 style="font-size: 36px; margin-bottom: 24px; color: var(--text-main);">Ready to Land Your Dream Job?</h2>
+            <p style="font-size: 18px; margin-bottom: 32px; color: var(--text-muted);">Join thousands of job seekers who've already been hired with ResumeCreator</p>
             <button class="btn btn-primary" onclick="openBuilder()">Start Creating Your Resume</button>
         </div>
     </section>
@@ -367,7 +390,7 @@
                             <option value="Senior Level">Senior / Executive</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary" onclick="nextStep(2)" style="width: 100%; margin-top: var(--spacing-lg);">Next: Work Experience</button>
+                    <button class="btn btn-primary" onclick="nextStep(2)" style="width: 100%; margin-top: 24px;">Next: Work Experience</button>
                 </div>
 
                 <!-- Step 2: Work Experience -->
@@ -379,7 +402,7 @@
                     <button type="button" class="btn-add" onclick="addExperienceEntry()">+ Add Another Job</button>
                     <button type="button" class="btn-ai-polish" onclick="polishContent('experience')" style="margin-left: 10px;">✨ Polish with AI</button>
                     
-                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md);">
+                    <div style="display: flex; gap: 16px; margin-top: 24px;">
                         <button class="btn btn-outline" onclick="prevStep(1)" style="flex: 1;">Back</button>
                         <button class="btn btn-primary" onclick="nextStep(3)" style="flex: 1;">Next: Education</button>
                     </div>
@@ -393,7 +416,7 @@
                     </div>
                     <button type="button" class="btn-add" onclick="addEducationEntry()">+ Add Another School</button>
 
-                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md);">
+                    <div style="display: flex; gap: 16px; margin-top: 24px;">
                         <button class="btn btn-outline" onclick="prevStep(2)" style="flex: 1;">Back</button>
                         <button class="btn btn-primary" onclick="nextStep(4)" style="flex: 1;">Next: Skills</button>
                     </div>
@@ -407,22 +430,8 @@
                         <textarea id="skills" placeholder="JavaScript, React, Python, Leadership, Communication..."></textarea>
                         <button type="button" class="btn-ai-polish" onclick="polishContent('skills')" style="margin-top: 10px;">✨ Polish with AI</button>
                     </div>
-                    <div style="display: flex; gap: var(--spacing-md);">
+                    <div style="display: flex; gap: 16px;">
                         <button class="btn btn-outline" onclick="prevStep(3)" style="flex: 1;">Back</button>
-                        <button class="btn btn-primary" onclick="nextStep(5)" style="flex: 1;">Next: Professional Summary</button>
-                    </div>
-                </div>
-
-                <!-- Step 5: Professional Summary -->
-                <div id="step5" class="builder-step" style="display: none;">
-                    <h3>Professional Summary</h3>
-                    <div class="form-group">
-                        <label>Professional Summary (Optional)</label>
-                        <textarea id="professionalSummary" placeholder="A short professional overview..."></textarea>
-                        <button type="button" class="btn-ai-polish" onclick="polishContent('summary')" style="margin-top: 10px;">✨ Polish with AI</button>
-                    </div>
-                    <div style="display: flex; gap: var(--spacing-md);">
-                        <button class="btn btn-outline" onclick="prevStep(4)" style="flex: 1;">Back</button>
                         <button class="btn btn-primary" onclick="completeResume()" style="flex: 1;">Complete & Download</button>
                     </div>
                 </div>
