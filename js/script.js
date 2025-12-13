@@ -15,10 +15,10 @@ const builderModal = document.getElementById('builderModal');
 // Note: Core auth logic (init, sign in/up/out) is now handled in auth.js
 // UI updates are handled by the global auth state listener in auth.js
 
-function openBuilder() {
+function openBuilder(startStep = 0) {
     if (auth.currentUser) {
         builderModal.classList.add('active');
-        currentStep = 1;
+        currentStep = startStep;
         
         // Initialize with one empty entry if empty
         if (!document.querySelector('#experience-container .entry-group')) {
@@ -28,11 +28,16 @@ function openBuilder() {
             addEducationEntry();
         }
         
-        showStep(1);
+        showStep(currentStep);
     } else {
         // Should not happen if redirect works, but as a fallback:
         window.location.href = 'login.html';
     }
+}
+
+function selectBuilderTemplate(template) {
+    resumeData.selectedTemplate = template;
+    nextStep(1); // Move to Step 1 (Contact)
 }
 
         function closeBuilder() {
@@ -56,7 +61,7 @@ function openBuilder() {
         }
 
         function showStep(step) {
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 0; i <= 5; i++) {
                 const stepEl = document.getElementById(`step${i}`);
                 if (stepEl) {
                     stepEl.style.display = i === step ? 'block' : 'none';
@@ -285,7 +290,7 @@ function openBuilder() {
         function selectTemplate(template) {
             resumeData.selectedTemplate = template;
             alert(`Selected ${template} template! Opening builder...`);
-            openBuilder();
+            openBuilder(1); // Skip Step 0 and go straight to Contact
         }
 
         function openPrintableResume(data) {

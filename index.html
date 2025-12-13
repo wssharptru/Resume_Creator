@@ -34,7 +34,6 @@
             <p>Create a professional resume in minutes with our easy-to-use builder</p>
             <div class="hero-buttons">
                 <button class="btn btn-primary" onclick="openBuilder()">Start Building</button>
-                <button class="btn btn-secondary" onclick="document.getElementById('examples').scrollIntoView({behavior: 'smooth'})">View Examples</button>
             </div>
         </div>
     </section>
@@ -169,51 +168,7 @@
         </div>
     </section>
 
-    <!-- Examples Section -->
-    <section id="examples" class="container" style="margin-bottom: var(--spacing-xl);">
-        <div class="section-header">
-            <h2>Get Inspired with Resume Examples</h2>
-            <p>See what high-quality resumes look like for your industry</p>
-        </div>
-        <div class="templates-grid">
-            <div class="template-card">
-                <div class="template-preview">Student Resume</div>
-                <div style="padding: var(--spacing-md);">
-                    <div class="template-name">Student Resume Example</div>
-                </div>
-            </div>
-            <div class="template-card">
-                <div class="template-preview">Manager Resume</div>
-                <div style="padding: var(--spacing-md);">
-                    <div class="template-name">Manager Resume Example</div>
-                </div>
-            </div>
-            <div class="template-card">
-                <div class="template-preview">Tech Professional Resume</div>
-                <div style="padding: var(--spacing-md);">
-                    <div class="template-name">Tech Resume Example</div>
-                </div>
-            </div>
-            <div class="template-card">
-                <div class="template-preview">Designer Resume</div>
-                <div style="padding: var(--spacing-md);">
-                    <div class="template-name">Designer Resume Example</div>
-                </div>
-            </div>
-            <div class="template-card">
-                <div class="template-preview">Teacher Resume</div>
-                <div style="padding: var(--spacing-md);">
-                    <div class="template-name">Teacher Resume Example</div>
-                </div>
-            </div>
-            <div class="template-card">
-                <div class="template-preview">Sales Resume</div>
-                <div style="padding: var(--spacing-md);">
-                    <div class="template-name">Sales Resume Example</div>
-                </div>
-            </div>
-        </div>
-    </section>
+
 
     <!-- FAQ Section -->
     <section id="faq" class="container" style="margin-bottom: var(--spacing-xl);">
@@ -340,6 +295,37 @@
                 </div>
             </div>
             <div id="builderForm">
+                <!-- Step 0: Choose Template -->
+                <div id="step0" class="builder-step">
+                    <h3>Choose Your Template</h3>
+                    <div class="templates-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div class="template-card" onclick="selectBuilderTemplate('classic')">
+                            <div class="template-preview" style="height: 200px;">
+                                <img src="images/classic_template_preview.png" alt="Classic" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+                            </div>
+                            <div style="padding: 10px;">
+                                <div class="template-name" style="font-size: 14px;">Classic Template</div>
+                            </div>
+                        </div>
+                        <div class="template-card" onclick="selectBuilderTemplate('modern')">
+                            <div class="template-preview" style="height: 200px;">
+                                <img src="images/modern_template_preview.png" alt="Modern" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+                            </div>
+                            <div style="padding: 10px;">
+                                <div class="template-name" style="font-size: 14px;">Modern Template</div>
+                            </div>
+                        </div>
+                        <div class="template-card" onclick="selectBuilderTemplate('executive')">
+                            <div class="template-preview" style="height: 200px;">
+                                <img src="images/executive_template_preview.png" alt="Executive" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+                            </div>
+                            <div style="padding: 10px;">
+                                <div class="template-name" style="font-size: 14px;">Executive Template</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Step 1: Contact Info -->
                 <div id="step1" class="builder-step">
                     <h3>Contact Information</h3>
